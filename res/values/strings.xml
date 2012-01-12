@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, GalaxyTorchActivity!</string>
     <string name="app_name">Galaxy Torch</string>
+    <string name="pressme">Press Me!</string>
 
 </resources>
