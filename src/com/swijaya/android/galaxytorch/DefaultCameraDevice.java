@@ -2,7 +2,7 @@ package com.swijaya.android.galaxytorch;
 
 import android.hardware.Camera;
 
-public class GalaxyCameraDevice extends CameraDevice {
+public class DefaultCameraDevice extends CameraDevice {
 
 	@Override
 	protected boolean doTurnOnCameraLED() {

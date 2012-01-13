@@ -18,7 +18,7 @@ public abstract class CameraDevice {
     		mCamera = Camera.open();
     	}
     	catch (RuntimeException e) {
-    		// TODO (camera does not exist or in use)
+    		Log.e(TAG, e.getLocalizedMessage());
     	}
 	}
     

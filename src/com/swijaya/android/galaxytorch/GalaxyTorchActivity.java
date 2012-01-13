@@ -22,7 +22,7 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        mCameraDevice = new GalaxyCameraDevice();
+        mCameraDevice = new DefaultCameraDevice();
         mIsTorchOn = false;
         
         Button button = (Button) findViewById(R.id.pressbutton);
