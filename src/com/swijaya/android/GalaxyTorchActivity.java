@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class GalaxyTorchActivity extends Activity implements OnClickListener {
+	
+	private final String TAG = "GalaxyTorchActivity";
 	
 	private CameraDevice mCameraDevice;
 	private boolean mIsTorchOn;
@@ -27,7 +30,8 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
     }
     
     public void onClick(View v) {
-		mCameraDevice.turnCameraLED(!mIsTorchOn);
+    	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on." : "off."));
+		mCameraDevice.turnCameraLED((mIsTorchOn = !mIsTorchOn));
 	}
 
 	/** Check if this device's feature list includes a camera. */
