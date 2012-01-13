@@ -1,4 +1,4 @@
-package com.swijaya.android;
+package com.swijaya.android.galaxytorch;
 
 import android.hardware.Camera;
 
