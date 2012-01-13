@@ -1,6 +1,9 @@
 package com.swijaya.android.galaxytorch;
 
+import java.util.List;
+
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.util.Log;
 
 public abstract class CameraDevice {
@@ -44,6 +47,23 @@ public abstract class CameraDevice {
     	catch (RuntimeException e) {
     		Log.e(TAG, e.getLocalizedMessage());
     	}
+		
+		// make sure the device supports FLASH_MODE_TORCH
+		Camera.Parameters params = mCamera.getParameters();
+		List<String> flashModes = params.getSupportedFlashModes();
+		boolean supportsTorchMode = false;
+		if (flashModes == null) {
+			Log.d(TAG, "The device does not support any flash mode!");
+		} else {
+			supportsTorchMode = flashModes.contains(Parameters.FLASH_MODE_TORCH);
+		}
+		
+		// bail early if we don't
+		if (!supportsTorchMode) {
+			Log.d(TAG, "The device does not support 'torch' mode!");
+			mCamera.release();
+			mCamera = null;
+		}
 	}
     
     public void releaseCamera() {
@@ -55,15 +75,19 @@ public abstract class CameraDevice {
     }
     
     public boolean turnCameraLED(boolean on) {
+    	boolean success = false;
+    	
     	if (mCamera == null) {
 			acquireCamera();
+			if (mCamera == null) {
+				// this happens if an exception occurred while attempting to
+				// open the camera
+				Log.e(TAG, "Cannot acquire camera.");
+				return success;
+			}
 		}
     	
-		assert (mCamera != null);
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
-		
-		boolean success;
-		
 		if (on) {
 			success = doTurnOnCameraLED();
 		} else {
