@@ -53,14 +53,14 @@ public abstract class CameraDevice {
 		List<String> flashModes = params.getSupportedFlashModes();
 		boolean supportsTorchMode = false;
 		if (flashModes == null) {
-			Log.d(TAG, "The device does not support any flash mode!");
+			Log.d(TAG, "This device does not support any flash mode!");
 		} else {
 			supportsTorchMode = flashModes.contains(Parameters.FLASH_MODE_TORCH);
 		}
 		
 		// bail early if we don't
 		if (!supportsTorchMode) {
-			Log.d(TAG, "The device does not support 'torch' mode!");
+			Log.d(TAG, "This device does not support 'torch' mode!");
 			mCamera.release();
 			mCamera = null;
 		}

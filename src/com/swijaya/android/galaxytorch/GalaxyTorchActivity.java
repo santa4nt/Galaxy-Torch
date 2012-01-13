@@ -31,7 +31,12 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
     
     public void onClick(View v) {
     	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on." : "off."));
-		mCameraDevice.turnCameraLED((mIsTorchOn = !mIsTorchOn));
+		if (mCameraDevice.turnCameraLED(!mIsTorchOn)) {
+			mIsTorchOn = !mIsTorchOn;
+			Log.d(TAG, "Flashlight should be on.");
+		} else {
+			Log.d(TAG, "Could not turn on flashlight.");
+		}
 	}
 
 	/** Check if this device's feature list includes a camera. */
