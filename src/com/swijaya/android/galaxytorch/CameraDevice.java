@@ -16,7 +16,6 @@ public abstract class CameraDevice {
 		
 		try {
     		mCamera = Camera.open();
-    		Log.d(TAG, "Camera acquired.");
     	}
     	catch (RuntimeException e) {
     		// TODO (camera does not exist or in use)
@@ -28,10 +27,29 @@ public abstract class CameraDevice {
     		Log.d(TAG, "Releasing camera...");
     		mCamera.release();
     		mCamera = null;
-    		Log.d(TAG, "Camera released.");
     	}
     }
     
-    public abstract boolean turnCameraLED(boolean on);
+    public boolean turnCameraLED(boolean on) {
+    	if (mCamera == null) {
+			acquireCamera();
+		}
+    	
+		assert (mCamera != null);
+		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
+		
+		boolean success;
+		if (on) {
+			success = doTurnOnCameraLED();
+		} else {
+			success = doTurnOffCameraLED();
+		}
+		
+		return success;
+    }
+    
+    protected abstract boolean doTurnOnCameraLED();
+    
+    protected abstract boolean doTurnOffCameraLED();
 
 }
