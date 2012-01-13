@@ -3,7 +3,6 @@ package com.swijaya.android.galaxytorch;
 import java.util.List;
 
 import android.hardware.Camera;
-import android.hardware.Camera.Parameters;
 import android.util.Log;
 
 public abstract class CameraDevice {
@@ -51,13 +50,8 @@ public abstract class CameraDevice {
 		// make sure the device supports FLASH_MODE_TORCH
 		Camera.Parameters params = mCamera.getParameters();
 		List<String> flashModes = params.getSupportedFlashModes();
-		boolean supportsTorchMode = false;
-		if (flashModes == null) {
-			Log.d(TAG, "This device does not support any flash mode!");
-		} else {
-			supportsTorchMode = flashModes.contains(Parameters.FLASH_MODE_TORCH);
-		}
-		
+		boolean supportsTorchMode = (flashModes != null) &&
+				(flashModes.contains(Camera.Parameters.FLASH_MODE_TORCH));
 		// bail early if we don't
 		if (!supportsTorchMode) {
 			Log.d(TAG, "This device does not support 'torch' mode!");
