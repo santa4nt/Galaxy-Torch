@@ -6,9 +6,10 @@ public class DefaultCameraDevice extends CameraDevice {
 
 	@Override
 	protected boolean doTurnOnCameraLED() {
-		Camera.Parameters params = mCamera.getParameters();
+		Camera camera = getCamera();
+		Camera.Parameters params = camera.getParameters();
 		params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-		mCamera.setParameters(params);
+		camera.setParameters(params);
 		return true;
 	}
 	
