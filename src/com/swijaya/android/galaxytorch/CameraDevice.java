@@ -55,8 +55,7 @@ public abstract class CameraDevice {
 		// bail early if we don't
 		if (!supportsTorchMode) {
 			Log.d(TAG, "This device does not support 'torch' mode!");
-			mCamera.release();
-			mCamera = null;
+			releaseCamera();
 		}
 	}
     
