@@ -1,4 +1,4 @@
-package com.swijaya.android.galaxytorch;
+package com.swijaya.galaxytorch;
 
 import java.util.List;
 
