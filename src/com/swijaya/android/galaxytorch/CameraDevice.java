@@ -58,6 +58,12 @@ public class CameraDevice {
     public void releaseCamera() {
     	if (mCamera != null) {
     		Log.d(TAG, "Releasing camera...");
+    		if (mIsFlashlightOn) {
+    			// attempt to cleanly turn off the torch (in case keeping a
+    			// "torch" on is a hackery) prior to release
+    			mTorch.turnTorch(mCamera, false);
+    			mIsFlashlightOn = false;
+    		}
     		mCamera.release();
     		mCamera = null;
     		mTorch = null;
