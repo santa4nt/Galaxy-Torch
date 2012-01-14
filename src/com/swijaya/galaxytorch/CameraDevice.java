@@ -48,7 +48,7 @@ public class CameraDevice {
     		if (mIsFlashlightOn) {
     			// attempt to cleanly turn off the torch (in case keeping a
     			// "torch" on is a hackery) prior to release
-    			mTorch.turnTorch(mCamera, false);
+    			mTorch.toggleTorch(mCamera, false);
     			mIsFlashlightOn = false;
     		}
     		mCamera.release();
@@ -90,7 +90,7 @@ public class CameraDevice {
     	mTorch = new DefaultTorch();
 
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
-		success = mTorch.turnTorch(mCamera, on);
+		success = mTorch.toggleTorch(mCamera, on);
 		if (success) {
 			mIsFlashlightOn = on;
 			if (!on) {

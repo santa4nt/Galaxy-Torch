@@ -4,6 +4,6 @@ import android.hardware.Camera;
 
 public interface ITorch {
 	
-	public boolean turnTorch(Camera camera, boolean on);
+	public boolean toggleTorch(Camera camera, boolean on);
 
 }

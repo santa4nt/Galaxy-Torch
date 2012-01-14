@@ -11,7 +11,7 @@ public class DefaultTorch implements ITorch {
 	 * Generally, the following simple steps should suffice to turn on the
 	 * flashlight's torch mode.
 	 */
-	public boolean turnTorch(Camera camera, boolean on) {
+	public boolean toggleTorch(Camera camera, boolean on) {
 		setFlashMode(camera, (on ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF));
 		return true;
 	}
