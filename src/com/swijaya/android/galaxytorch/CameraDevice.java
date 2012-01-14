@@ -5,28 +5,16 @@ import java.util.List;
 import android.hardware.Camera;
 import android.util.Log;
 
-public abstract class CameraDevice {
+public class CameraDevice {
 	
 	private static final String TAG = "CameraDevice";
 	
 	private Camera mCamera;
-	private boolean mFlashlightOn;
+	private ITorch mTorch;
+	private boolean mIsFlashlightOn;
 	
-	protected Camera getCamera() {
-		return mCamera;
-	}
-	
-	protected void setCamera(Camera camera) {
-		mCamera = camera;
-	}
-	
-	/**
-	 * Reflects the current state of the flashlight.
-	 * 
-	 * @return whether the current state of the flashlight is on
-	 */
 	public boolean isFlashlightOn() {
-		return mFlashlightOn;
+		return mIsFlashlightOn;
 	}
 
 	/**
@@ -34,13 +22,10 @@ public abstract class CameraDevice {
 	 * Subclasses can override this method for a more specialized usage of
 	 * its camera hardware, if necessary.
 	 * 
-	 * If it does choose to do so, use setCamera() method to set an
-	 * associated camera object.
-	 * 
 	 * @return success in opening and acquiring a camera device's resources
 	 */
 	public boolean acquireCamera() {
-		Log.d(TAG, "Acquiring camera...");	
+		Log.d(TAG, "Acquiring camera...");
 		assert (mCamera == null);
 		try {
     		mCamera = Camera.open();
@@ -59,10 +44,12 @@ public abstract class CameraDevice {
 		List<String> flashModes = params.getSupportedFlashModes();
 		boolean supportsTorchMode = (flashModes != null) &&
 				(flashModes.contains(Camera.Parameters.FLASH_MODE_TORCH));
-		// bail early if we don't
+		// bail early if we don't	// XXX: there might be workarounds; use specialized ITorch classes in such cases
 		if (!supportsTorchMode) {
 			Log.d(TAG, "This device does not support 'torch' mode!");
 			releaseCamera();
+		} else {
+			mTorch = new DefaultTorch();
 		}
 		
 		return supportsTorchMode;
@@ -73,48 +60,37 @@ public abstract class CameraDevice {
     		Log.d(TAG, "Releasing camera...");
     		mCamera.release();
     		mCamera = null;
+    		mTorch = null;
     	}
     }
     
     public boolean turnCameraLED(boolean on) {
     	boolean success = false;
     	
+    	// first, obtain a camera device (with torch support)
     	if (mCamera == null) {
-			acquireCamera();
+			success = acquireCamera();
+			if (!success) {
+				Log.e(TAG, "Cannot turn camera LED " + (on ? "on" : "off"));
+				return success;
+			}
 		}
     	
-    	assert (getCamera() != null);	// contractual pre-condition for the abstract method about to be called below
+    	// we've got a working torch-supported camera device now
+    	assert (mTorch != null);
+
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
 		if (on) {
-			success = doTurnOnCameraLED();
+			success = mTorch.turnOnTorch(mCamera);
 		} else {
-			success = doTurnOffCameraLED();
+			success = mTorch.turnOffTorch(mCamera);
 		}
 		
 		if (success) {
-			mFlashlightOn = on;
+			mIsFlashlightOn = on;
 		}
 		
 		return success;
     }
-    
-    /**
-     * Concrete subclasses must override this method to turn on its
-     * flashlight. It could be assumed that an instance of Camera object
-     * has been instantiated successfully when this method is called.
-     * 
-     * @return whether the flashlight was successfully turned on
-     */
-    protected abstract boolean doTurnOnCameraLED();
-    
-    /**
-     * Concrete subclasses must override this method to turn off its
-     * flashlight. It could be assumed that an instance of Camera object
-     * has been previously instantiated and, when this method finishes,
-     * it will be released.
-     * 
-     * @return whether the flashlight was successfully turned off
-     */
-    protected abstract boolean doTurnOffCameraLED();
 
 }

@@ -22,7 +22,7 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        mCameraDevice = new DefaultCameraDevice();
+        mCameraDevice = new CameraDevice();
         mIsTorchOn = false;
         
         Button button = (Button) findViewById(R.id.pressbutton);
@@ -30,10 +30,10 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
     }
     
     public void onClick(View v) {
-    	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on." : "off."));
+    	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on" : "off"));
 		if (mCameraDevice.turnCameraLED(!mIsTorchOn)) {
 			mIsTorchOn = !mIsTorchOn;
-			Log.d(TAG, "Flashlight should be on.");
+			Log.d(TAG, "Flashlight should be " + (mIsTorchOn ? "on" : "off"));
 		} else {
 			Log.d(TAG, "Could not turn on flashlight.");
 		}
