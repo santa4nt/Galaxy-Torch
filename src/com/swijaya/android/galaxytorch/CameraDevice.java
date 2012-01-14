@@ -39,20 +39,7 @@ public class CameraDevice {
 			return false;
 		}
 		
-		// make sure the device supports torch mode
-		Camera.Parameters params = mCamera.getParameters();
-		List<String> flashModes = params.getSupportedFlashModes();
-		boolean supportsTorchMode = (flashModes != null) &&
-				(flashModes.contains(Camera.Parameters.FLASH_MODE_TORCH));
-		// bail early if we don't	// XXX: there might be workarounds; use specialized ITorch classes in such cases
-		if (!supportsTorchMode) {
-			Log.d(TAG, "This device does not support 'torch' mode!");
-			releaseCamera();
-		} else {
-			mTorch = new DefaultTorch();
-		}
-		
-		return supportsTorchMode;
+		return true;
 	}
     
     public void releaseCamera() {
@@ -70,20 +57,37 @@ public class CameraDevice {
     	}
     }
     
+    private boolean supportsTorchMode() {
+    	assert (mCamera != null);
+    	Camera.Parameters params = mCamera.getParameters();
+    	List<String> flashModes = params.getSupportedFlashModes();
+    	return (flashModes != null) &&
+    			(flashModes.contains(Camera.Parameters.FLASH_MODE_TORCH));
+    }
+    
     public boolean turnCameraLED(boolean on) {
     	boolean success = false;
     	
-    	// first, obtain a camera device (with torch support)
+    	// first, obtain a camera device
     	if (mCamera == null) {
 			success = acquireCamera();
 			if (!success) {
 				Log.e(TAG, "Cannot turn camera LED " + (on ? "on" : "off"));
-				return success;
+				return false;
 			}
 		}
     	
+    	// check if the camera's flashlight supports torch mode
+    	if (!supportsTorchMode()) {
+    		// for now, bail early
+    		// XXX: there might be workarounds; use specialized ITorch classes in such cases
+    		Log.d(TAG, "This device does not support 'torch' mode!");
+    		releaseCamera();
+    		return false;
+    	}
+    	
     	// we've got a working torch-supported camera device now
-    	assert (mTorch != null);
+    	mTorch = new DefaultTorch();
 
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
 		success = mTorch.turnTorch(mCamera, on);
