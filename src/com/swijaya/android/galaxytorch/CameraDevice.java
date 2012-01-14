@@ -80,14 +80,13 @@ public class CameraDevice {
     	assert (mTorch != null);
 
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
-		if (on) {
-			success = mTorch.turnOnTorch(mCamera);
-		} else {
-			success = mTorch.turnOffTorch(mCamera);
-		}
-		
+		success = mTorch.turnTorch(mCamera, on);
 		if (success) {
 			mIsFlashlightOn = on;
+			if (!on) {
+				// when we are turning off the flashlight, also release camera
+				releaseCamera();
+			}
 		}
 		
 		return success;

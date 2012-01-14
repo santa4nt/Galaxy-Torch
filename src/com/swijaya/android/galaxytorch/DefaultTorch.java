@@ -1,21 +1,26 @@
 package com.swijaya.android.galaxytorch;
 
 import android.hardware.Camera;
+import android.util.Log;
 
 public class DefaultTorch implements ITorch {
+	
+	private static final String TAG = "DefaultTorch";
 
-	public boolean turnOnTorch(Camera camera) {
-		Camera.Parameters params = camera.getParameters();
-		params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-		camera.setParameters(params);
+	/**
+	 * Generally, the following simple steps should suffice to turn on the
+	 * flashlight's torch mode.
+	 */
+	public boolean turnTorch(Camera camera, boolean on) {
+		setFlashMode(camera, (on ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF));
 		return true;
 	}
-
-	public boolean turnOffTorch(Camera camera) {
+	
+	private void setFlashMode(Camera camera, String mode) {
+		Log.d(TAG, "Setting flash mode: " + mode);
 		Camera.Parameters params = camera.getParameters();
-		params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+		params.setFlashMode(mode);
 		camera.setParameters(params);
-		return true;
 	}
 
 }
