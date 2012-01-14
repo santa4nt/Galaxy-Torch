@@ -36,8 +36,10 @@ public abstract class CameraDevice {
 	 * 
 	 * If it does choose to do so, use setCamera() method to set an
 	 * associated camera object.
+	 * 
+	 * @return success in opening and acquiring a camera device's resources
 	 */
-	public void acquireCamera() {
+	public boolean acquireCamera() {
 		Log.d(TAG, "Acquiring camera...");	
 		assert (mCamera == null);
 		try {
@@ -47,7 +49,12 @@ public abstract class CameraDevice {
     		Log.e(TAG, e.getLocalizedMessage());
     	}
 		
-		// make sure the device supports FLASH_MODE_TORCH
+		if (mCamera == null) {
+			Log.e(TAG, "Failed to open camera.");
+			return false;
+		}
+		
+		// make sure the device supports torch mode
 		Camera.Parameters params = mCamera.getParameters();
 		List<String> flashModes = params.getSupportedFlashModes();
 		boolean supportsTorchMode = (flashModes != null) &&
@@ -57,6 +64,8 @@ public abstract class CameraDevice {
 			Log.d(TAG, "This device does not support 'torch' mode!");
 			releaseCamera();
 		}
+		
+		return supportsTorchMode;
 	}
     
     public void releaseCamera() {
@@ -72,14 +81,9 @@ public abstract class CameraDevice {
     	
     	if (mCamera == null) {
 			acquireCamera();
-			if (mCamera == null) {
-				// this happens if an exception occurred while attempting to
-				// open the camera
-				Log.e(TAG, "Cannot acquire camera.");
-				return success;
-			}
 		}
     	
+    	assert (getCamera() != null);	// contractual pre-condition for the abstract method about to be called below
 		Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
 		if (on) {
 			success = doTurnOnCameraLED();
