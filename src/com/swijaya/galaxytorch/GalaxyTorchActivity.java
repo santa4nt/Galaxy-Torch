@@ -1,15 +1,16 @@
 package com.swijaya.galaxytorch;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
-public class GalaxyTorchActivity extends Activity implements OnClickListener {
+import com.swijaya.galaxytorch.R.id;
+
+public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
 	
 	private final String TAG = "GalaxyTorchActivity";
 	
@@ -27,27 +28,20 @@ public class GalaxyTorchActivity extends Activity implements OnClickListener {
         
         Button button = (Button) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
+        
+        SurfaceView cameraPreview = mCameraDevice.acquireCamera(this);
+        FrameLayout preview = (FrameLayout) findViewById(id.camera_preview);
+        preview.addView(cameraPreview);
     }
     
     public void onClick(View v) {
     	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on" : "off"));
-		if (mCameraDevice.turnCameraLED(!mIsTorchOn)) {
+		if (mCameraDevice.toggleCameraLED(!mIsTorchOn)) {
 			mIsTorchOn = !mIsTorchOn;
 			Log.d(TAG, "Flashlight should be " + (mIsTorchOn ? "on" : "off"));
 		} else {
 			Log.d(TAG, "Could not turn on flashlight.");
 		}
 	}
-
-	/** Check if this device's feature list includes a camera. */
-    private boolean hasFeatureCamera(Context context) {
-    	return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-    }
-    
-    /** Check if this device's feature list includes a camera flashlight. */
-    private boolean hasFeatureCameraFlashlight(Context context) {
-    	return hasFeatureCamera(context) &&
-    			context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-    }
     
 }
