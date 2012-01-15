@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-import com.swijaya.galaxytorch.R.id;
-
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
 	
 	private final String TAG = "GalaxyTorchActivity";
@@ -30,7 +28,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         button.setOnClickListener(this);
         
         SurfaceView cameraPreview = mCameraDevice.acquireCamera(this);
-        FrameLayout preview = (FrameLayout) findViewById(id.camera_preview);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(cameraPreview);
     }
     
