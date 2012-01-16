@@ -9,37 +9,40 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
-	
-	private final String TAG = "GalaxyTorchActivity";
-	
-	private CameraDevice mCameraDevice;
-	private boolean mIsTorchOn;
-	
+
+    private final String TAG = "GalaxyTorchActivity";
+
+    private CameraDevice mCameraDevice;
+    private FrameLayout mPreviewLayout; // should be hidden
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
+
         mCameraDevice = new CameraDevice();
-        mIsTorchOn = false;
-        
+        mPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
+
         Button button = (Button) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
-        
-        SurfaceView cameraPreview = mCameraDevice.acquireCamera(this);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-        preview.addView(cameraPreview);
     }
-    
+
     public void onClick(View v) {
-    	Log.d(TAG, "I'm being pressed! Current state: " + (mIsTorchOn ? "on" : "off"));
-		if (mCameraDevice.toggleCameraLED(!mIsTorchOn)) {
-			mIsTorchOn = !mIsTorchOn;
-			Log.d(TAG, "Flashlight should be " + (mIsTorchOn ? "on" : "off"));
-		} else {
-			Log.d(TAG, "Could not turn on flashlight.");
-		}
-	}
-    
+        boolean isTorchOn = mCameraDevice.isFlashlightOn();
+        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+
+        if (!isTorchOn) {
+            // we're toggling the torch ON
+            SurfaceView preview = mCameraDevice.acquireCamera(this);
+            mPreviewLayout.addView(preview);
+        }
+
+        if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
+            Log.e(TAG, "Cannot toggle camera LED");
+        }
+        Log.v(TAG, "Current torch state should be " +
+                (mCameraDevice.isFlashlightOn() ? "on" : "off"));
+    }
+
 }
