@@ -41,8 +41,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         } else {
             // we're toggling the torch OFF
             assert (mCameraPreview != null);
-            mPreviewLayout.removeView(mCameraPreview);
-            mCameraPreview = null;
         }
 
         // toggling the torch OFF should automatically release camera resources
@@ -50,8 +48,15 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             Log.e(TAG, "Cannot toggle camera LED");
         }
 
-        Log.v(TAG, "Current torch state should be " +
-                (mCameraDevice.isFlashlightOn() ? "on" : "off"));
+        isTorchOn = mCameraDevice.isFlashlightOn();
+        Log.v(TAG, "Current torch state should be " + (isTorchOn ? "on" : "off"));
+
+        if (!isTorchOn) {
+            // clean up after toggling OFF: preview surface
+            Log.v(TAG, "Cleaning up preview surface");
+            mPreviewLayout.removeView(mCameraPreview);
+            mCameraPreview = null;
+        }
     }
 
 }

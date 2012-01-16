@@ -103,7 +103,7 @@ public class CameraDevice {
         mTorch = new DefaultTorch();
 
         boolean success = false;
-        Log.d(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
+        Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
         success = mTorch.toggleTorch(mCamera, on);
         if (success) {
             mIsFlashlightOn = on;
