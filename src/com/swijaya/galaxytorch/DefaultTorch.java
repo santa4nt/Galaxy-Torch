@@ -3,7 +3,7 @@ package com.swijaya.galaxytorch;
 import android.hardware.Camera;
 import android.util.Log;
 
-public class DefaultTorch implements ITorch {
+public class DefaultTorch implements CameraDevice.Torch {
 	
 	private static final String TAG = "DefaultTorch";
 

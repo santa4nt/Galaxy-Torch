@@ -14,7 +14,7 @@ public class CameraDevice {
 	private static final String TAG = "CameraDevice";
 	
 	private Camera mCamera;
-	private ITorch mTorch;
+	private CameraDevice.Torch mTorch;
 	private boolean mIsFlashlightOn;
 	
 	public boolean isFlashlightOn() {
@@ -56,6 +56,7 @@ public class CameraDevice {
     			mTorch.toggleTorch(mCamera, false);
     			mIsFlashlightOn = false;
     		}
+    		mCamera.stopPreview();
     		mCamera.release();
     		mCamera = null;
     		mTorch = null;
@@ -71,7 +72,8 @@ public class CameraDevice {
     
     /**
      * Toggle the camera device's flashlight LED in a continuous manner.
-     * Pre-condition: the camera device has been acquired
+     * Pre-condition: the camera device, and its associated resources, has
+     *                been acquired and set up
      * Post-condition: the camera device will be released if this method
      *                 is called with parameter on == false
      * 
@@ -145,6 +147,12 @@ public class CameraDevice {
     		// prior to resizing or reformatting
     	}
     	
+    }
+    
+    protected interface Torch {
+        
+        public boolean toggleTorch(Camera camera, boolean on);
+    
     }
 
 }
