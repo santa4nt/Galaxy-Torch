@@ -14,6 +14,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     private CameraDevice mCameraDevice;
     private FrameLayout mPreviewLayout; // should be hidden
+    private SurfaceView mCameraPreview;
 
     /** Called when the activity is first created. */
     @Override
@@ -34,13 +35,21 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         if (!isTorchOn) {
             // we're toggling the torch ON
-            SurfaceView preview = mCameraDevice.acquireCamera(this);
-            mPreviewLayout.addView(preview);
+            assert (mCameraPreview == null);
+            mCameraPreview = mCameraDevice.acquireCamera(this);
+            mPreviewLayout.addView(mCameraPreview);
+        } else {
+            // we're toggling the torch OFF
+            assert (mCameraPreview != null);
+            mPreviewLayout.removeView(mCameraPreview);
+            mCameraPreview = null;
         }
 
+        // toggling the torch OFF should automatically release camera resources
         if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
             Log.e(TAG, "Cannot toggle camera LED");
         }
+
         Log.v(TAG, "Current torch state should be " +
                 (mCameraDevice.isFlashlightOn() ? "on" : "off"));
     }
