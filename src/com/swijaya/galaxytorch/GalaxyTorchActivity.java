@@ -1,7 +1,6 @@
 package com.swijaya.galaxytorch;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -60,13 +59,71 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
     }
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// as per the manifest configuration, this will be called on
-		// orientation change or the virtual keyboard being hidden,
-		// which should not even happen at all, due to the activity's
-		// orientation being set to 'portrait' mode in the manifest
-		super.onConfigurationChanged(newConfig);
-	}
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // as per the manifest configuration, this will be called on
+        // orientation change or the virtual keyboard being hidden,
+        // which should not even happen at all, due to the activity's
+        // orientation being set to 'portrait' mode in the manifest
+        super.onConfigurationChanged(newConfig);
+    }*/
+
+    /*@Override
+    protected void onDestroy() {
+        // the entire lifetime ends here
+        super.onDestroy();
+        Log.v(TAG, "onDestroy");
+    }*/
+
+    @Override
+    protected void onPause() {
+        // the foreground lifetime ends here (called often)
+        super.onPause();
+        Log.v(TAG, "onPause");
+
+        // turn off the torch if it is on
+        // XXX: toggleCameraLED() has noticeable delay! consider
+        //      alternative approach to concurrently finish onPause
+        //      while toggling camera torch and releasing resources
+        boolean isTorchOn = mCameraDevice.isFlashlightOn();
+        if (isTorchOn) {
+            // toggling the camera LED off also releases resources, which
+            // contain extra actions that are probably better performed
+            // elsewhere in the lifecycle model
+            if (!mCameraDevice.toggleCameraLED(false)) {
+                Log.e(TAG, "Cannot toggle camera LED");
+            }
+        }
+    }
+
+    /*@Override
+    protected void onResume() {
+        // the foreground lifetime starts here (called often)
+        super.onResume();
+        Log.v(TAG, "onResume");
+    }*/
+
+    @Override
+    protected void onStart() {
+        // the visible timeline starts here
+        super.onStart();
+        Log.v(TAG, "onStart");
+
+        assert (mCameraPreview == null);
+        assert (!mCameraDevice.isFlashlightOn());
+    }
+
+    @Override
+    protected void onStop() {
+        // the visible timeline ends here
+        super.onStop();
+        Log.v(TAG, "onStop");
+
+        // clean up after toggling OFF: preview surface
+        assert (mPreviewLayout != null);
+        Log.v(TAG, "Cleaning up preview surface");
+        mPreviewLayout.removeView(mCameraPreview);
+        mCameraPreview = null;
+    }
 
 }
