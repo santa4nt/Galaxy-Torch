@@ -32,6 +32,15 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // as long as this activity is visible, keep the screen turned on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+    
+    private void removePreviewSurface() {
+        assert (mPreviewLayout != null);
+        if (mCameraPreview != null) {
+	        Log.v(TAG, "Cleaning up preview surface");
+	        mPreviewLayout.removeView(mCameraPreview);
+	        mCameraPreview = null;
+        }
+    }
 
     public void onClick(View v) {
         boolean isTorchOn = mCameraDevice.isFlashlightOn();
@@ -57,9 +66,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         if (!isTorchOn) {
             // clean up after toggling OFF: preview surface
-            Log.v(TAG, "Cleaning up preview surface");
-            mPreviewLayout.removeView(mCameraPreview);
-            mCameraPreview = null;
+            removePreviewSurface();
         }
     }
 
@@ -72,12 +79,18 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onConfigurationChanged(newConfig);
     }*/
 
-    /*@Override
+    @Override
     protected void onDestroy() {
         // the entire lifetime ends here
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-    }*/
+        
+        assert (mCameraPreview == null);
+        assert (!mCameraDevice.isFlashlightOn());
+        
+        mCameraDevice.releaseCamera();
+        mCameraDevice = null;
+    }
 
     @Override
     protected void onPause() {
@@ -93,10 +106,17 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         if (isTorchOn) {
             // toggling the camera LED off also releases resources, which
             // contain extra actions that are probably better performed
-            // elsewhere in the lifecycle model
+            // elsewhere in the activity life cycle model
             if (!mCameraDevice.toggleCameraLED(false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
             }
+            
+            // if toggle OFF did its job, this should be a no-op
+            mCameraDevice.releaseCamera();
+            
+            // XXX: there is a life cycle path where onStop() wouldn't be called AFTER onPause()!
+            //      in such a case, we need to do the same thing there
+            removePreviewSurface();
         }
     }
 
@@ -124,10 +144,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "onStop");
 
         // clean up after toggling OFF: preview surface
-        assert (mPreviewLayout != null);
-        Log.v(TAG, "Cleaning up preview surface");
-        mPreviewLayout.removeView(mCameraPreview);
-        mCameraPreview = null;
+        // XXX: there is a life cycle path where onStop() wouldn't be called AFTER onPause()!
+        //      in such a case, we need to do the same thing there
+        removePreviewSurface();
     }
 
 }

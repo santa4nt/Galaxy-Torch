@@ -138,7 +138,12 @@ public class CameraDevice {
         public void surfaceCreated(SurfaceHolder holder) {
             // tell the camera where to draw the preview
             Log.v(TAG, "surface created");
+            assert (!mIsPreviewStarted);
             Camera camera = getCamera();
+            if (camera == null) {
+            	Log.wtf(TAG, "!! surface created called with NULL camera");
+            	return;
+            }
             try {
                 camera.setPreviewDisplay(holder);
                 camera.startPreview();
