@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
@@ -27,6 +28,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         Button button = (Button) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
+
+        // as long as this activity is visible, keep the screen turned on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     public void onClick(View v) {
