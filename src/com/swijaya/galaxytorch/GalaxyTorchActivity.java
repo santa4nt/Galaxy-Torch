@@ -1,6 +1,7 @@
 package com.swijaya.galaxytorch;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -40,10 +41,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             mPreviewLayout.addView(mCameraPreview);
         } else {
             // we're toggling the torch OFF
-            assert (mCameraPreview != null);
         }
 
         // toggling the torch OFF should automatically release camera resources
+        assert (mCameraPreview != null);
         if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
             Log.e(TAG, "Cannot toggle camera LED");
         }
@@ -58,5 +59,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             mCameraPreview = null;
         }
     }
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// as per the manifest configuration, this will be called on
+		// orientation change or the virtual keyboard being hidden,
+		// which should not even happen at all, due to the activity's
+		// orientation being set to 'portrait' mode in the manifest
+		super.onConfigurationChanged(newConfig);
+	}
 
 }
