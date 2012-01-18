@@ -6,8 +6,8 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
 
@@ -26,7 +26,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         mCameraDevice = new CameraDevice();
         mPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
 
-        Button button = (Button) findViewById(R.id.pressbutton);
+        ImageButton button = (ImageButton) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
 
         // as long as this activity is visible, keep the screen turned on

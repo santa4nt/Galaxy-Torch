@@ -10,14 +10,15 @@
         android:id="@+id/camera_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible" />
+        android:visibility="invisible" />
 
-    <Button
+    <ImageButton
         android:id="@+id/pressbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/pressme" />
+        android:contentDescription="@string/pressme"
+        android:src="@drawable/ic_launcher" />
 
 </RelativeLayout>
