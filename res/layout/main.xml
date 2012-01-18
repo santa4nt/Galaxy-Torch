@@ -19,6 +19,6 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:contentDescription="@string/pressme"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/button" />
 
 </RelativeLayout>
