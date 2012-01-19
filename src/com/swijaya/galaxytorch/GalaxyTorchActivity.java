@@ -26,8 +26,17 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         mCameraDevice = new CameraDevice();
         mPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
 
-        ImageButton button = (ImageButton) findViewById(R.id.pressbutton);
+        final ImageButton button = (ImageButton) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
+        
+        mCameraDevice.addFlashlightListener(new CameraDevice.FlashlightListener() {
+			
+        	// when the camera device is toggled (via toggleCameraLED call),
+        	// this callback will set the button's state (see: button.isSelected())
+			public void flashlightToggled(boolean state) {
+				button.setSelected(state);
+			}
+		});
 
         // as long as this activity is visible, keep the screen turned on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

@@ -1,6 +1,7 @@
 package com.swijaya.galaxytorch;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -17,13 +18,33 @@ public class CameraDevice {
     private CameraDevice.Torch mTorch;
     private boolean mIsFlashlightOn;
     private boolean mIsPreviewStarted;
+    private List<FlashlightListener> mFlashlightListeners;
+    
+    public CameraDevice() {
+    	mFlashlightListeners = new ArrayList<FlashlightListener>();
+    }
 
     public boolean isFlashlightOn() {
         return mIsFlashlightOn;
     }
+    
+    private void setFlashlightOn(boolean on) {
+    	mIsFlashlightOn = on;
+    	for (FlashlightListener listener : mFlashlightListeners) {
+    		listener.flashlightToggled(on);
+    	}
+    }
 
     protected Camera getCamera() {
         return mCamera;
+    }
+    
+    public void addFlashlightListener(FlashlightListener listener) {
+    	mFlashlightListeners.add(listener);
+    }
+    
+    public boolean removeFlashlightListener(FlashlightListener listener) {
+    	return mFlashlightListeners.remove(listener);
     }
 
     /**
@@ -59,7 +80,7 @@ public class CameraDevice {
                 // attempt to cleanly turn off the torch (in case keeping a
                 // "torch" on is a hackery) prior to release
                 mTorch.toggleTorch(mCamera, false);
-                mIsFlashlightOn = false;
+                setFlashlightOn(false);
             }
             if (mIsPreviewStarted) {
                 mCamera.stopPreview();
@@ -106,7 +127,7 @@ public class CameraDevice {
         Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
         success = mTorch.toggleTorch(mCamera, on);
         if (success) {
-            mIsFlashlightOn = on;
+        	setFlashlightOn(on);
             if (!on) {
                 // when we are turning off the flashlight, also release camera
                 releaseCamera();
@@ -172,6 +193,12 @@ public class CameraDevice {
 
         public boolean toggleTorch(Camera camera, boolean on);
 
+    }
+    
+    public interface FlashlightListener {
+    	
+    	public void flashlightToggled(boolean state);
+    	
     }
 
 }
