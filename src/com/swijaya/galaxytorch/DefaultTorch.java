@@ -1,11 +1,11 @@
 package com.swijaya.galaxytorch;
 
 import android.hardware.Camera;
-import android.util.Log;
+//import android.util.Log;
 
 public class DefaultTorch implements CameraDevice.Torch {
 
-    private static final String TAG = "DefaultTorch";
+    //private static final String TAG = "DefaultTorch";
 
     /**
      * Generally, the following simple steps should suffice to turn on the
@@ -17,7 +17,7 @@ public class DefaultTorch implements CameraDevice.Torch {
     }
 
     private void setFlashMode(Camera camera, String mode) {
-        Log.v(TAG, "Setting flash mode: " + mode);
+        //Log.v(TAG, "Setting flash mode: " + mode);
         Camera.Parameters params = camera.getParameters();
         params.setFlashMode(mode);
         camera.setParameters(params);

@@ -2,7 +2,7 @@ package com.swijaya.galaxytorch;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
 
-    private final String TAG = "GalaxyTorchActivity";
+    //private final String TAG = "GalaxyTorchActivity";
 
     private CameraDevice mCameraDevice;
     private FrameLayout mPreviewLayout; // should be hidden
@@ -45,7 +45,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private void removePreviewSurface() {
         assert (mPreviewLayout != null);
         if (mCameraPreview != null) {
-	        Log.v(TAG, "Cleaning up preview surface");
+	        //Log.v(TAG, "Cleaning up preview surface");
 	        mPreviewLayout.removeView(mCameraPreview);
 	        mCameraPreview = null;
         }
@@ -53,7 +53,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void onClick(View v) {
         boolean isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+        //Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
 
         if (!isTorchOn) {
             // we're toggling the torch ON
@@ -67,11 +67,11 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // toggling the torch OFF should automatically release camera resources
         assert (mCameraPreview != null);
         if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
-            Log.e(TAG, "Cannot toggle camera LED");
+            //Log.e(TAG, "Cannot toggle camera LED");
         }
 
         isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state should be " + (isTorchOn ? "on" : "off"));
+        //Log.v(TAG, "Current torch state should be " + (isTorchOn ? "on" : "off"));
 
         if (!isTorchOn) {
             // clean up after toggling OFF: preview surface
@@ -92,7 +92,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     protected void onDestroy() {
         // the entire lifetime ends here
         super.onDestroy();
-        Log.v(TAG, "onDestroy");
+        //Log.v(TAG, "onDestroy");
         
         assert (mCameraPreview == null);
         assert (!mCameraDevice.isFlashlightOn());
@@ -105,7 +105,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     protected void onPause() {
         // the foreground lifetime ends here (called often)
         super.onPause();
-        Log.v(TAG, "onPause");
+        //Log.v(TAG, "onPause");
 
         // turn off the torch if it is on
         // XXX: toggleCameraLED() has noticeable delay! consider
@@ -117,7 +117,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             // contain extra actions that are probably better performed
             // elsewhere in the activity life cycle model
             if (!mCameraDevice.toggleCameraLED(false)) {
-                Log.e(TAG, "Cannot toggle camera LED");
+                //Log.e(TAG, "Cannot toggle camera LED");
             }
             
             // if toggle OFF did its job, this should be a no-op
@@ -140,7 +140,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     protected void onStart() {
         // the visible timeline starts here
         super.onStart();
-        Log.v(TAG, "onStart");
+        //Log.v(TAG, "onStart");
 
         assert (mCameraPreview == null);
         assert (!mCameraDevice.isFlashlightOn());
@@ -150,7 +150,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     protected void onStop() {
         // the visible timeline ends here
         super.onStop();
-        Log.v(TAG, "onStop");
+        //Log.v(TAG, "onStop");
 
         // clean up after toggling OFF: preview surface
         // XXX: there is a life cycle path where onStop() wouldn't be called AFTER onPause()!

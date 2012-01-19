@@ -14,7 +14,7 @@
 
     <application
         android:icon="@drawable/lightbulb_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name" android:debuggable="false">
         <activity
             android:name=".GalaxyTorchActivity"
             android:label="@string/app_name"
