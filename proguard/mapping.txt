@@ -1,0 +1,46 @@
+com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.b:
+    android.hardware.Camera mCamera -> a
+    com.swijaya.galaxytorch.CameraDevice$Torch mTorch -> b
+    boolean mIsFlashlightOn -> c
+    boolean mIsPreviewStarted -> d
+    java.util.List mFlashlightListeners -> e
+    boolean $assertionsDisabled -> f
+    boolean isFlashlightOn() -> a
+    void setFlashlightOn(boolean) -> b
+    android.hardware.Camera getCamera() -> b
+    void addFlashlightListener(com.swijaya.galaxytorch.CameraDevice$FlashlightListener) -> a
+    android.view.SurfaceView acquireCamera(android.content.Context) -> a
+    void releaseCamera() -> c
+    boolean toggleCameraLED(boolean) -> a
+    boolean access$000(com.swijaya.galaxytorch.CameraDevice) -> a
+    boolean access$002$64e57915(com.swijaya.galaxytorch.CameraDevice) -> b
+com.swijaya.galaxytorch.CameraDevice$CameraPreview -> com.swijaya.galaxytorch.c:
+    android.view.SurfaceHolder mHolder -> a
+    boolean $assertionsDisabled -> b
+    com.swijaya.galaxytorch.CameraDevice this$0 -> c
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+com.swijaya.galaxytorch.CameraDevice$FlashlightListener -> com.swijaya.galaxytorch.f:
+    void flashlightToggled(boolean) -> a
+com.swijaya.galaxytorch.CameraDevice$Torch -> com.swijaya.galaxytorch.d:
+    boolean toggleTorch(android.hardware.Camera,boolean) -> a
+com.swijaya.galaxytorch.DefaultTorch -> com.swijaya.galaxytorch.e:
+    boolean toggleTorch(android.hardware.Camera,boolean) -> a
+com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTorchActivity:
+    java.lang.String TAG -> a
+    com.swijaya.galaxytorch.CameraDevice mCameraDevice -> b
+    android.widget.FrameLayout mPreviewLayout -> c
+    android.view.SurfaceView mCameraPreview -> d
+    boolean $assertionsDisabled -> e
+    void onCreate(android.os.Bundle) -> onCreate
+    void removePreviewSurface() -> a
+    void onClick(android.view.View) -> onClick
+    void onDestroy() -> onDestroy
+    void onPause() -> onPause
+    void onStart() -> onStart
+    void onStop() -> onStop
+com.swijaya.galaxytorch.GalaxyTorchActivity$1 -> com.swijaya.galaxytorch.a:
+    com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> a
+    android.widget.ImageButton val$button -> b
+    void flashlightToggled(boolean) -> a
