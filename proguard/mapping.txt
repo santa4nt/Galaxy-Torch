@@ -12,12 +12,12 @@ com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.b:
     android.view.SurfaceView acquireCamera(android.content.Context) -> a
     void releaseCamera() -> c
     boolean toggleCameraLED(boolean) -> a
-    boolean access$000(com.swijaya.galaxytorch.CameraDevice) -> a
-    boolean access$002$64e57915(com.swijaya.galaxytorch.CameraDevice) -> b
+    boolean access$0(com.swijaya.galaxytorch.CameraDevice) -> a
+    void access$1$64e57919(com.swijaya.galaxytorch.CameraDevice) -> b
 com.swijaya.galaxytorch.CameraDevice$CameraPreview -> com.swijaya.galaxytorch.c:
     android.view.SurfaceHolder mHolder -> a
-    boolean $assertionsDisabled -> b
-    com.swijaya.galaxytorch.CameraDevice this$0 -> c
+    com.swijaya.galaxytorch.CameraDevice this$0 -> b
+    boolean $assertionsDisabled -> c
     void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
     void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
     void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
