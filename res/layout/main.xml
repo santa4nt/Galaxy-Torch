@@ -11,15 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible" />
-
+
     <ImageButton
         android:id="@+id/pressbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/pressme"
-        android:src="@drawable/button"
-        android:background="@android:color/transparent" />
+        android:src="@drawable/button" />
 
 </RelativeLayout>

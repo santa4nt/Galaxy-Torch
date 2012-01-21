@@ -3,5 +3,7 @@
 
     <string name="app_name">Galaxy Torch</string>
     <string name="pressme">Press Me!</string>
+    <string name="err_cannot_acquire">Cannot acquire camera resources!</string>
+    <string name="err_cannot_toggle">Cannot toggle camera LED!</string>
 
 </resources>

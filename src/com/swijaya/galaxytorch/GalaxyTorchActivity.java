@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener {
 
@@ -28,26 +29,26 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         final ImageButton button = (ImageButton) findViewById(R.id.pressbutton);
         button.setOnClickListener(this);
-        
+
         mCameraDevice.addFlashlightListener(new CameraDevice.FlashlightListener() {
-			
-        	// when the camera device is toggled (via toggleCameraLED call),
-        	// this callback will set the button's state (see: button.isSelected())
-			public void flashlightToggled(boolean state) {
-				button.setSelected(state);
-			}
-		});
+
+            // when the camera device is toggled (via toggleCameraLED call),
+            // this callback will set the button's state (see: button.isSelected())
+            public void flashlightToggled(boolean state) {
+                button.setSelected(state);
+            }
+        });
 
         // as long as this activity is visible, keep the screen turned on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
-    
+
     private void removePreviewSurface() {
         assert (mPreviewLayout != null);
         if (mCameraPreview != null) {
-	        Log.v(TAG, "Cleaning up preview surface");
-	        mPreviewLayout.removeView(mCameraPreview);
-	        mCameraPreview = null;
+            Log.v(TAG, "Cleaning up preview surface");
+            mPreviewLayout.removeView(mCameraPreview);
+            mCameraPreview = null;
         }
     }
 
@@ -59,6 +60,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             // we're toggling the torch ON
             assert (mCameraPreview == null);
             mCameraPreview = mCameraDevice.acquireCamera(this);
+            if (mCameraPreview == null) {
+                // we failed to obtain the camera's resources
+                // alert the user
+                Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_acquire,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
             mPreviewLayout.addView(mCameraPreview);
         } else {
             // we're toggling the torch OFF
@@ -68,6 +77,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         assert (mCameraPreview != null);
         if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
             Log.e(TAG, "Cannot toggle camera LED");
+            // alert the user
+            Toast.makeText(getApplicationContext(),
+                    R.string.err_cannot_toggle,
+                    Toast.LENGTH_LONG).show();
         }
 
         isTorchOn = mCameraDevice.isFlashlightOn();
@@ -93,10 +106,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // the entire lifetime ends here
         super.onDestroy();
         Log.v(TAG, "onDestroy");
-        
+
         assert (mCameraPreview == null);
         assert (!mCameraDevice.isFlashlightOn());
-        
+
         mCameraDevice.releaseCamera();
         mCameraDevice = null;
     }
@@ -119,10 +132,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             if (!mCameraDevice.toggleCameraLED(false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
             }
-            
+
             // if toggle OFF did its job, this should be a no-op
             mCameraDevice.releaseCamera();
-            
+
             // XXX: there is a life cycle path where onStop() wouldn't be called AFTER onPause()!
             //      in such a case, we need to do the same thing there
             removePreviewSurface();
