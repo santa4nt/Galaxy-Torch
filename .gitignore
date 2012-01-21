@@ -1,5 +1,6 @@
 /gen
 /bin
-/lib
-local.properties
+/libs
 .DS_Store
+local.properties
+secure.properties

@@ -27,6 +27,11 @@
 
          -->
     <property file="ant.properties" />
+	
+	<!-- Add secure.properties file to store sensitive configuration properties
+	     (e.g. keystore credentials) that should be stored locally and NOT
+	     checked into Version Control Systems. -->
+	<property file="secure.properties" />
 
     <!-- The project.properties file is created and updated by the 'android'
          tool, as well as ADT.
