@@ -18,6 +18,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private CameraDevice mCameraDevice;
     private FrameLayout mPreviewLayout; // should be hidden
     private SurfaceView mCameraPreview;
+    private ImageButton mToggleButton;
 
     /** Called when the activity is first created. */
     @Override
@@ -28,8 +29,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         mCameraDevice = new CameraDevice();
         mPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
 
-        final ImageButton button = (ImageButton) findViewById(R.id.pressbutton);
-        button.setOnClickListener(this);
+        mToggleButton = (ImageButton) findViewById(R.id.pressbutton);
+        mToggleButton.setOnClickListener(this);
 
         mCameraDevice.addFlashlightListener(new CameraDevice.FlashlightListener() {
 
@@ -40,10 +41,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 // (an AsyncTask runner), so make sure to set the button
                 // state from the UI thread
                 final boolean fstate = state;
-                button.post(new Runnable() {
+                mToggleButton.post(new Runnable() {
 
                     public void run() {
-                        button.setSelected(fstate);
+                        mToggleButton.setSelected(fstate);
                     }
                 });
             }
@@ -69,6 +70,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         @Override
         protected void onPreExecute() {
             mIsTorchOn = mCameraDevice.isFlashlightOn();
+            mToggleButton.setEnabled(false);
         }
 
         @Override
@@ -132,6 +134,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 // clean up preview surface after turning flashlight off
                 removePreviewSurface();
             }
+            mToggleButton.setEnabled(true);
         }
 
     }
