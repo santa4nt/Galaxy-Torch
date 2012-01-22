@@ -63,7 +63,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
     }
 
-    private class CameraToggleTask extends AsyncTask<Boolean, SurfaceView, Boolean> {
+    private class CameraToggleTask extends AsyncTask<Boolean, Boolean, Boolean> {
 
         private boolean mIsTorchOn;
 
@@ -77,7 +77,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         protected Boolean doInBackground(Boolean... params) {
             assert (params.length == 1);
             boolean on = params[0].booleanValue();
-            if (on ^ mIsTorchOn) {   // sanity check
+            if (!(on ^ mIsTorchOn)) {   // sanity check
                 Log.wtf(TAG, "Toggling with the same state!");
                 return true;        // do nothing
             }
@@ -85,14 +85,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             if (!mIsTorchOn) {
                 // we're toggling the torch on
                 assert (mCameraPreview == null);
-                SurfaceView cameraPreview = mCameraDevice.acquireCamera(GalaxyTorchActivity.this);
-                if (cameraPreview == null) {
-                    // we failed to obtain the camera's resources; bail fast
-                    publishProgress((SurfaceView) null);
+                boolean success = mCameraDevice.acquireCamera();
+                publishProgress(success);   // alert the UI thread to update its preview layout
+                if (!success)   // bail fast if we didn't succeed acquiring camera
+                    return false;
+                if (isCancelled()) {
+                    Log.v(TAG, "Cancelled after camera resources were acquired.");
                     return false;
                 }
-                // alert the UI thread to update its preview layout
-                publishProgress(cameraPreview);
             }
             // actually toggle the torch
             // NOTE: toggling the torch off should automatically release its resources
@@ -106,17 +106,35 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
          * we are toggling on the torch.
          */
         @Override
-        protected void onProgressUpdate(SurfaceView... values) {
+        protected void onProgressUpdate(Boolean... values) {
             assert (values.length == 1);
-            mCameraPreview = values[0];
-            if (mCameraPreview == null) {
+            boolean isCameraAcquired = values[0];
+            if (!isCameraAcquired) {
                 // we failed to obtain the camera's resources; alert the user
                 Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_acquire,
                         Toast.LENGTH_LONG).show();
                 return;
             }
+
+            assert (mCameraPreview == null);
+            try {
+                Log.v(TAG, "Creating surface view...");
+                mCameraPreview = mCameraDevice.createSurfaceView(GalaxyTorchActivity.this);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Cannot create surface view: " + e.getLocalizedMessage());
+                cancel(true);
+                return;
+            }
+
+            // XXX: there is a noticeable delay in screen refresh after this call!
             mPreviewLayout.addView(mCameraPreview);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mCameraDevice.releaseCamera();
         }
 
         @Override

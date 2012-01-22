@@ -18,33 +18,33 @@ public class CameraDevice {
     private CameraDevice.Torch mTorch;
     private boolean mIsFlashlightOn;
     private boolean mIsPreviewStarted;
-    private List<FlashlightListener> mFlashlightListeners;
-    
+    private final List<FlashlightListener> mFlashlightListeners;
+
     public CameraDevice() {
-    	mFlashlightListeners = new ArrayList<FlashlightListener>();
+        mFlashlightListeners = new ArrayList<FlashlightListener>();
     }
 
     public boolean isFlashlightOn() {
         return mIsFlashlightOn;
     }
-    
+
     private void setFlashlightOn(boolean on) {
-    	mIsFlashlightOn = on;
-    	for (FlashlightListener listener : mFlashlightListeners) {
-    		listener.flashlightToggled(on);
-    	}
+        mIsFlashlightOn = on;
+        for (FlashlightListener listener : mFlashlightListeners) {
+            listener.flashlightToggled(on);
+        }
     }
 
     protected Camera getCamera() {
         return mCamera;
     }
-    
+
     public void addFlashlightListener(FlashlightListener listener) {
-    	mFlashlightListeners.add(listener);
+        mFlashlightListeners.add(listener);
     }
-    
+
     public boolean removeFlashlightListener(FlashlightListener listener) {
-    	return mFlashlightListeners.remove(listener);
+        return mFlashlightListeners.remove(listener);
     }
 
     /**
@@ -53,9 +53,9 @@ public class CameraDevice {
      * its camera hardware, if necessary.
      * 
      * @param context the activity that invoked this method
-     * @return a SurfaceView object attached to the camera
+     * @return whether the method was successful
      */
-    public SurfaceView acquireCamera(Context context) {
+    public boolean acquireCamera() {
         Log.v(TAG, "Acquiring camera...");
         assert (mCamera == null);
         try {
@@ -67,10 +67,10 @@ public class CameraDevice {
 
         if (mCamera == null) {
             Log.e(TAG, "Failed to open camera");
-            return null;
+            return false;
         }
 
-        return new CameraPreview(context);
+        return true;
     }
 
     public void releaseCamera() {
@@ -127,7 +127,7 @@ public class CameraDevice {
         Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
         success = mTorch.toggleTorch(mCamera, on);
         if (success) {
-        	setFlashlightOn(on);
+            setFlashlightOn(on);
             if (!on) {
                 // when we are turning off the flashlight, also release camera
                 releaseCamera();
@@ -135,6 +135,10 @@ public class CameraDevice {
         }
 
         return success;
+    }
+
+    public SurfaceView createSurfaceView(Context context) {
+        return new CameraPreview(context);
     }
 
     protected class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
@@ -162,8 +166,8 @@ public class CameraDevice {
             assert (!mIsPreviewStarted);
             Camera camera = getCamera();
             if (camera == null) {
-            	Log.wtf(TAG, "!! surface created called with NULL camera");
-            	return;
+                Log.wtf(TAG, "!! surfaceCreated called with NULL camera");
+                return;
             }
             try {
                 camera.setPreviewDisplay(holder);
@@ -194,11 +198,11 @@ public class CameraDevice {
         public boolean toggleTorch(Camera camera, boolean on);
 
     }
-    
+
     public interface FlashlightListener {
-    	
-    	public void flashlightToggled(boolean state);
-    	
+
+        public void flashlightToggled(boolean state);
+
     }
 
 }
