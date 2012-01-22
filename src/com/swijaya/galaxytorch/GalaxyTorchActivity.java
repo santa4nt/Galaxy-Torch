@@ -1,6 +1,7 @@
 package com.swijaya.galaxytorch;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -35,7 +36,16 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             // when the camera device is toggled (via toggleCameraLED call),
             // this callback will set the button's state (see: button.isSelected())
             public void flashlightToggled(boolean state) {
-                button.setSelected(state);
+                // this callback will be called from a background thread
+                // (an AsyncTask runner), so make sure to set the button
+                // state from the UI thread
+                final boolean fstate = state;
+                button.post(new Runnable() {
+
+                    public void run() {
+                        button.setSelected(fstate);
+                    }
+                });
             }
         });
 
@@ -52,44 +62,88 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
     }
 
-    public void onClick(View v) {
-        boolean isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+    private class CameraToggleTask extends AsyncTask<Boolean, SurfaceView, Boolean> {
 
-        if (!isTorchOn) {
-            // we're toggling the torch ON
-            assert (mCameraPreview == null);
-            mCameraPreview = mCameraDevice.acquireCamera(this);
+        private boolean mIsTorchOn;
+
+        @Override
+        protected void onPreExecute() {
+            mIsTorchOn = mCameraDevice.isFlashlightOn();
+        }
+
+        @Override
+        protected Boolean doInBackground(Boolean... params) {
+            assert (params.length == 1);
+            boolean on = params[0].booleanValue();
+            if (on ^ mIsTorchOn) {   // sanity check
+                Log.wtf(TAG, "Toggling with the same state!");
+                return true;        // do nothing
+            }
+
+            if (!mIsTorchOn) {
+                // we're toggling the torch on
+                assert (mCameraPreview == null);
+                SurfaceView cameraPreview = mCameraDevice.acquireCamera(GalaxyTorchActivity.this);
+                if (cameraPreview == null) {
+                    // we failed to obtain the camera's resources; bail fast
+                    publishProgress((SurfaceView) null);
+                    return false;
+                }
+                // alert the UI thread to update its preview layout
+                publishProgress(cameraPreview);
+            }
+            // actually toggle the torch
+            // NOTE: toggling the torch off should automatically release its resources
+            mIsTorchOn = mCameraDevice.toggleCameraLED(on);
+            return mIsTorchOn;
+        }
+
+        /**
+         * We are using AsyncTask's onProgressUpdate callback to update the activity's
+         * (invisible) camera preview layout. This callback should only be called when
+         * we are toggling on the torch.
+         */
+        @Override
+        protected void onProgressUpdate(SurfaceView... values) {
+            assert (values.length == 1);
+            mCameraPreview = values[0];
             if (mCameraPreview == null) {
-                // we failed to obtain the camera's resources
-                // alert the user
+                // we failed to obtain the camera's resources; alert the user
                 Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_acquire,
                         Toast.LENGTH_LONG).show();
                 return;
             }
             mPreviewLayout.addView(mCameraPreview);
-        } else {
-            // we're toggling the torch OFF
         }
 
-        // toggling the torch OFF should automatically release camera resources
-        assert (mCameraPreview != null);
-        if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
-            Log.e(TAG, "Cannot toggle camera LED");
-            // alert the user
-            Toast.makeText(getApplicationContext(),
-                    R.string.err_cannot_toggle,
-                    Toast.LENGTH_LONG).show();
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (!result) {
+                Log.e(TAG, "Cannot toggle camera LED");
+                // alert the user
+                Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_toggle,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            Log.v(TAG, "Current torch state should be " + (mIsTorchOn ? "on" : "off"));
+            if (!mIsTorchOn) {
+                // clean up preview surface after turning flashlight off
+                removePreviewSurface();
+            }
         }
 
-        isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state should be " + (isTorchOn ? "on" : "off"));
+    }
 
-        if (!isTorchOn) {
-            // clean up after toggling OFF: preview surface
-            removePreviewSurface();
+    public void onClick(View v) {
+        if (mCameraDevice == null) {
+            Log.wtf(TAG, "Did not acquire camera resources before toggle!");
         }
+
+        boolean isTorchOn = mCameraDevice.isFlashlightOn();
+        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+        new CameraToggleTask().execute(!isTorchOn);
     }
 
     /*@Override
