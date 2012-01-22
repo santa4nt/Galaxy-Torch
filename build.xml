@@ -84,7 +84,73 @@
          In all cases you must update the value of version-tag below to read 'custom' instead of an integer,
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
-    <!-- version-tag: 1 -->
+
+    <target name="-obfuscate">
+        <if condition="${proguard.enabled}">
+            <then>
+                <property name="obfuscate.absolute.dir" location="${out.absolute.dir}/proguard" />
+                <property name="preobfuscate.jar.file" value="${obfuscate.absolute.dir}/original.jar" />
+                <property name="obfuscated.jar.file" value="${obfuscate.absolute.dir}/obfuscated.jar" />
+                <!-- input for dex will be proguard's output -->
+                <property name="out.dex.input.absolute.dir" value="${obfuscated.jar.file}" />
+
+                <!-- Add Proguard Tasks -->
+                <property name="proguard.jar" location="${android.tools.dir}/proguard/lib/proguard.jar" />
+                <taskdef name="proguard" classname="proguard.ant.ProGuardTask" classpath="${proguard.jar}" />
+
+                <!-- Set the android classpath Path object into a single property. It'll be
+                     all the jar files separated by a platform path-separator.
+                     Each path must be quoted if it contains spaces.
+                -->
+                <pathconvert property="android.libraryjars" refid="android.target.classpath">
+                    <firstmatchmapper>
+                        <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+                        <identitymapper/>
+                    </firstmatchmapper>
+                </pathconvert>
+
+                <!-- Build a path object with all the jar files that must be obfuscated.
+                     This include the project compiled source code and any 3rd party jar
+                     files. -->
+                <path id="project.jars.ref">
+                    <pathelement location="${preobfuscate.jar.file}" />
+                    <path refid="jar.libs.ref" />
+                </path>
+                <!-- Set the project jar files Path object into a single property. It'll be
+                     all the jar files separated by a platform path-separator.
+                     Each path must be quoted if it contains spaces.
+                -->
+                <pathconvert property="project.jars" refid="project.jars.ref">
+                    <firstmatchmapper>
+                        <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+                        <identitymapper/>
+                    </firstmatchmapper>
+                </pathconvert>
+
+                <mkdir   dir="${obfuscate.absolute.dir}" />
+                <delete file="${preobfuscate.jar.file}"/>
+                <delete file="${obfuscated.jar.file}"/>
+                <jar basedir="${out.classes.absolute.dir}"
+                    destfile="${preobfuscate.jar.file}" />
+                <proguard>
+                    @${proguard.config}
+                    -injars       ${project.jars}
+                    -outjars      "${obfuscated.jar.file}"
+                    -libraryjars  ${android.libraryjars}
+                    -dump         "${obfuscate.absolute.dir}/dump.txt"
+                    -printseeds   "${obfuscate.absolute.dir}/seeds.txt"
+                    -printusage   "${obfuscate.absolute.dir}/usage.txt"
+                    -printmapping "${obfuscate.absolute.dir}/mapping.txt"
+                </proguard>
+
+                <property name="obfuscate.mapping.dir" location="proguard" />
+                <copy file="${obfuscate.absolute.dir}/mapping.txt"
+                    todir="${obfuscate.mapping.dir}" />
+            </then>
+        </if>
+    </target>
+
+    <!-- version-tag: custom -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
 </project>
