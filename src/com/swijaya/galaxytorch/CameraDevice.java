@@ -62,15 +62,10 @@ public class CameraDevice {
             mCamera = Camera.open();
         }
         catch (RuntimeException e) {
-            Log.e(TAG, e.getLocalizedMessage());
+            Log.e(TAG, "Failed to open camera: " + e.getLocalizedMessage());
         }
 
-        if (mCamera == null) {
-            Log.e(TAG, "Failed to open camera");
-            return false;
-        }
-
-        return true;
+        return (mCamera != null);
     }
 
     public void releaseCamera() {

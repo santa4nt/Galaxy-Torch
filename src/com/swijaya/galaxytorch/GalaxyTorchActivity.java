@@ -52,6 +52,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         // as long as this activity is visible, keep the screen turned on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        boolean success = mCameraDevice.acquireCamera();
+        if (!success) {
+            return;
+        }
+
+        mCameraPreview = mCameraDevice.createSurfaceView(this);
+        mPreviewLayout.addView(mCameraPreview);
     }
 
     private void removePreviewSurface() {
@@ -82,7 +90,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 return true;        // do nothing
             }
 
-            if (!mIsTorchOn) {
+            if (!mIsTorchOn && mCameraPreview == null) {
                 // we're toggling the torch on
                 assert (mCameraPreview == null);
                 boolean success = mCameraDevice.acquireCamera();
@@ -96,8 +104,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             }
             // actually toggle the torch
             // NOTE: toggling the torch off should automatically release its resources
-            mIsTorchOn = mCameraDevice.toggleCameraLED(on);
-            return mIsTorchOn;
+            return mCameraDevice.toggleCameraLED(on);
         }
 
         /**
@@ -125,16 +132,19 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             catch (Exception e) {
                 Log.e(TAG, "Cannot create surface view: " + e.getLocalizedMessage());
                 cancel(true);
+                Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_acquire,
+                        Toast.LENGTH_LONG).show();
                 return;
             }
 
-            // XXX: there is a noticeable delay in screen refresh after this call!
             mPreviewLayout.addView(mCameraPreview);
         }
 
         @Override
         protected void onCancelled() {
             mCameraDevice.releaseCamera();
+            removePreviewSurface();
         }
 
         @Override
@@ -147,6 +157,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                         Toast.LENGTH_LONG).show();
             }
 
+            mIsTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state should be " + (mIsTorchOn ? "on" : "off"));
             if (!mIsTorchOn) {
                 // clean up preview surface after turning flashlight off
