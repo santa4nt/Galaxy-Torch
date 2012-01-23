@@ -190,14 +190,16 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         // the entire lifetime ends here
-        super.onDestroy();
         Log.v(TAG, "onDestroy");
 
         assert (mCameraPreview == null);
         assert (!mCameraDevice.isFlashlightOn());
 
         mCameraDevice.releaseCamera();
+        removePreviewSurface();
         mCameraDevice = null;
+
+        super.onDestroy();
     }
 
     @Override
