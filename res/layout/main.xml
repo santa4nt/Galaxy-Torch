@@ -4,14 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:layout_gravity="center"
-    android:padding="10dp" >
-
-    <FrameLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible" />
-
+    android:padding="10dp" >
     <ImageButton
         android:id="@+id/pressbutton"
         android:layout_width="wrap_content"
@@ -21,5 +14,15 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/pressme"
         android:src="@drawable/button" />
+
+    <!-- setting this component's visibility to "invisible" just renders
+         my device's (Galaxy Nexus) torch mode not to have any effect!
+         so let's just "hack" it by setting width and height of 1dp -->
+    <SurfaceView
+        android:id="@+id/camerapreview"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

@@ -5,7 +5,7 @@ import android.util.Log;
 
 public class DefaultTorch implements CameraDevice.Torch {
 
-    private static final String TAG = "DefaultTorch";
+    private static final String TAG = DefaultTorch.class.getSimpleName();
 
     /**
      * Generally, the following simple steps should suffice to turn on the
