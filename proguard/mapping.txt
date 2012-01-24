@@ -1,66 +1,34 @@
-com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.c:
-    android.hardware.Camera mCamera -> a
-    com.swijaya.galaxytorch.CameraDevice$Torch mTorch -> b
-    boolean mIsFlashlightOn -> c
-    boolean mIsPreviewStarted -> d
-    java.util.List mFlashlightListeners -> e
+com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.a:
+    java.lang.String TAG -> a
+    android.hardware.Camera mCamera -> b
+    com.swijaya.galaxytorch.CameraDevice$Torch mTorch -> c
+    boolean mIsFlashlightOn -> d
+    boolean mIsPreviewStarted -> e
     boolean $assertionsDisabled -> f
     boolean isFlashlightOn() -> a
-    void setFlashlightOn(boolean) -> b
     android.hardware.Camera getCamera() -> b
-    void addFlashlightListener(com.swijaya.galaxytorch.CameraDevice$FlashlightListener) -> a
     boolean acquireCamera() -> c
     void releaseCamera() -> d
+    void stopPreview() -> e
+    void startPreview() -> f
     boolean toggleCameraLED(boolean) -> a
-    android.view.SurfaceView createSurfaceView(android.content.Context) -> a
-    boolean access$000(com.swijaya.galaxytorch.CameraDevice) -> a
-    boolean access$002$64e57915(com.swijaya.galaxytorch.CameraDevice) -> b
-com.swijaya.galaxytorch.CameraDevice$CameraPreview -> com.swijaya.galaxytorch.d:
-    android.view.SurfaceHolder mHolder -> a
-    boolean $assertionsDisabled -> b
-    com.swijaya.galaxytorch.CameraDevice this$0 -> c
-    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
-    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
-    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
-com.swijaya.galaxytorch.CameraDevice$FlashlightListener -> com.swijaya.galaxytorch.h:
-    void flashlightToggled(boolean) -> a
-com.swijaya.galaxytorch.CameraDevice$Torch -> com.swijaya.galaxytorch.e:
+com.swijaya.galaxytorch.CameraDevice$Torch -> com.swijaya.galaxytorch.b:
     boolean toggleTorch(android.hardware.Camera,boolean) -> a
-com.swijaya.galaxytorch.DefaultTorch -> com.swijaya.galaxytorch.f:
+com.swijaya.galaxytorch.DefaultTorch -> com.swijaya.galaxytorch.c:
+    java.lang.String TAG -> a
     boolean toggleTorch(android.hardware.Camera,boolean) -> a
 com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTorchActivity:
     java.lang.String TAG -> a
-    com.swijaya.galaxytorch.CameraDevice mCameraDevice -> b
-    android.widget.FrameLayout mPreviewLayout -> c
-    android.view.SurfaceView mCameraPreview -> d
-    android.widget.ImageButton mToggleButton -> e
-    boolean $assertionsDisabled -> f
+    android.view.SurfaceView mCameraPreview -> b
+    android.widget.ImageButton mToggleButton -> c
+    com.swijaya.galaxytorch.CameraDevice mCameraDevice -> d
+    boolean $assertionsDisabled -> e
     void onCreate(android.os.Bundle) -> onCreate
-    void removePreviewSurface() -> a
-    void onClick(android.view.View) -> onClick
     void onDestroy() -> onDestroy
-    void onPause() -> onPause
     void onStart() -> onStart
+    void onPause() -> onPause
     void onStop() -> onStop
-    android.widget.ImageButton access$000(com.swijaya.galaxytorch.GalaxyTorchActivity) -> a
-    com.swijaya.galaxytorch.CameraDevice access$100(com.swijaya.galaxytorch.GalaxyTorchActivity) -> b
-    android.view.SurfaceView access$200(com.swijaya.galaxytorch.GalaxyTorchActivity) -> c
-    android.view.SurfaceView access$202(com.swijaya.galaxytorch.GalaxyTorchActivity,android.view.SurfaceView) -> a
-    android.widget.FrameLayout access$300(com.swijaya.galaxytorch.GalaxyTorchActivity) -> d
-    void access$400(com.swijaya.galaxytorch.GalaxyTorchActivity) -> e
-com.swijaya.galaxytorch.GalaxyTorchActivity$1 -> com.swijaya.galaxytorch.b:
-    com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> a
-    void flashlightToggled(boolean) -> a
-com.swijaya.galaxytorch.GalaxyTorchActivity$1$1 -> com.swijaya.galaxytorch.a:
-    boolean val$fstate -> a
-    com.swijaya.galaxytorch.GalaxyTorchActivity$1 this$1 -> b
-    void run() -> run
-com.swijaya.galaxytorch.GalaxyTorchActivity$CameraToggleTask -> com.swijaya.galaxytorch.g:
-    boolean mIsTorchOn -> a
-    boolean $assertionsDisabled -> b
-    com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> c
-    void onPreExecute() -> onPreExecute
-    void onCancelled() -> onCancelled
-    void onProgressUpdate(java.lang.Object[]) -> onProgressUpdate
-    void onPostExecute(java.lang.Object) -> onPostExecute
-    java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+    void onClick(android.view.View) -> onClick
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
