@@ -131,10 +131,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             // actually toggle the LED (in torch mode)
             if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
                 Log.e(TAG, "Cannot toggle camera LED");
-                // alert the user
-                Toast.makeText(getApplicationContext(),
-                        R.string.err_cannot_toggle,
-                        Toast.LENGTH_LONG).show();
             }
 
             // sanity check
@@ -144,7 +140,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             assert (isTorchOnAfter == !isTorchOn);
             if (isTorchOnAfter == isTorchOn) {
                 Log.wtf(TAG, "Current torch state after toggle did not change!");
-                // TODO: alert user (or, try another method?)
+                Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_toggle,
+                        Toast.LENGTH_LONG).show();
+                // TODO: maybe try another strategy?
             }
 
             mToggleButton.setSelected(isTorchOnAfter);
