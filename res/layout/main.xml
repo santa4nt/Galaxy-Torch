@@ -9,8 +9,7 @@
         android:id="@+id/pressbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
         android:background="@android:color/transparent"
         android:contentDescription="@string/pressme"
         android:src="@drawable/button" />
@@ -22,7 +21,6 @@
         android:id="@+id/camerapreview"
         android:layout_width="1dp"
         android:layout_height="1dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
