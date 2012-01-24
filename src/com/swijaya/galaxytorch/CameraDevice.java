@@ -13,12 +13,6 @@ public class CameraDevice {
 
     }
 
-    public interface FlashlightListener {
-
-        public void flashlightToggled(boolean state);
-
-    }
-
     private static final String TAG = CameraDevice.class.getSimpleName();
 
     private Camera mCamera;
