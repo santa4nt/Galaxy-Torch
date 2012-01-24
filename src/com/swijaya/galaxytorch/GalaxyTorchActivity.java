@@ -46,24 +46,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         mToggleButton.setEnabled(true);
 
-        mCameraDevice.addFlashlightListener(new CameraDevice.FlashlightListener() {
-
-            // when the camera device is toggled (via toggleCameraLED call),
-            // this callback will set the button's state (see: button.isSelected())
-            public void flashlightToggled(boolean state) {
-                // this callback will be called from a background thread
-                // (an AsyncTask runner), so make sure to set the button
-                // state from the UI thread
-                final boolean fstate = state;
-                mToggleButton.post(new Runnable() {
-
-                    public void run() {
-                        mToggleButton.setSelected(fstate);
-                    }
-                });
-            }
-        });
-
         // as long as this activity is visible, keep the screen turned on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -136,30 +118,38 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     /* *** END MAIN ACTIVITY'S LIFE CYCLE CALLBACK *** */
 
     public void onClick(View v) {
-        boolean isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
-        if (isTorchOn ^ mToggleButton.isSelected()) {
-            assert (false);
-            Log.wtf(TAG, "Button state does not match device state!");
-        }
+        mToggleButton.setEnabled(false);
 
-        // actually toggle the LED (in torch mode)
-        if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
-            Log.e(TAG, "Cannot toggle camera LED");
-            // alert the user
-            Toast.makeText(getApplicationContext(),
-                    R.string.err_cannot_toggle,
-                    Toast.LENGTH_LONG).show();
-        }
+        try {
+            boolean isTorchOn = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+            if (isTorchOn ^ mToggleButton.isSelected()) {
+                assert (false);
+                Log.wtf(TAG, "Button state does not match device state!");
+            }
 
-        // sanity check
-        boolean isTorchOnAfter = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state should be " + (isTorchOn ? "off" : "on")
-                + " and it is " + (isTorchOnAfter ? "on" : "off"));
-        assert (isTorchOnAfter == !isTorchOn);
-        if (isTorchOnAfter == isTorchOn) {
-            Log.wtf(TAG, "Current torch state after toggle did not change!");
-            // TODO: alert user (or, try another method?)
+            // actually toggle the LED (in torch mode)
+            if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
+                Log.e(TAG, "Cannot toggle camera LED");
+                // alert the user
+                Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_toggle,
+                        Toast.LENGTH_LONG).show();
+            }
+
+            // sanity check
+            boolean isTorchOnAfter = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state should be " + (isTorchOn ? "off" : "on")
+                    + " and it is " + (isTorchOnAfter ? "on" : "off"));
+            assert (isTorchOnAfter == !isTorchOn);
+            if (isTorchOnAfter == isTorchOn) {
+                Log.wtf(TAG, "Current torch state after toggle did not change!");
+                // TODO: alert user (or, try another method?)
+            }
+
+            mToggleButton.setSelected(isTorchOnAfter);
+        } finally {
+            mToggleButton.setEnabled(true);
         }
     }
 

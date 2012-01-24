@@ -1,6 +1,5 @@
 package com.swijaya.galaxytorch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.hardware.Camera;
@@ -26,11 +25,6 @@ public class CameraDevice {
     private CameraDevice.Torch mTorch;
     private boolean mIsFlashlightOn;
     private boolean mIsPreviewStarted;
-    private final List<FlashlightListener> mFlashlightListeners;
-
-    public CameraDevice() {
-        mFlashlightListeners = new ArrayList<FlashlightListener>();
-    }
 
     public boolean isFlashlightOn() {
         return mIsFlashlightOn;
@@ -38,21 +32,10 @@ public class CameraDevice {
 
     private void postFlashlightState(boolean on) {
         mIsFlashlightOn = on;
-        for (FlashlightListener listener : mFlashlightListeners) {
-            listener.flashlightToggled(on);
-        }
     }
 
     protected Camera getCamera() {
         return mCamera;
-    }
-
-    public void addFlashlightListener(FlashlightListener listener) {
-        mFlashlightListeners.add(listener);
-    }
-
-    public boolean removeFlashlightListener(FlashlightListener listener) {
-        return mFlashlightListeners.remove(listener);
     }
 
     /**
