@@ -139,7 +139,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                     + " and it is " + (isTorchOnAfter ? "on" : "off"));
             assert (isTorchOnAfter == !isTorchOn);
             if (isTorchOnAfter == isTorchOn) {
-                Log.wtf(TAG, "Current torch state after toggle did not change!");
+                Log.e(TAG, "Current torch state after toggle did not change");
                 Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_toggle,
                         Toast.LENGTH_LONG).show();
