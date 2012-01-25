@@ -4,7 +4,8 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:layout_gravity="center"
-    android:padding="10dp" >
+    android:padding="10dp"
+    android:background="@android:color/black" >
     <ImageButton
         android:id="@+id/pressbutton"
         android:layout_width="wrap_content"
