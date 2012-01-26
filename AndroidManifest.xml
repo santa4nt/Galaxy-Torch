@@ -32,6 +32,11 @@
             <meta-data android:name="android.appwidget.provider" 
                        android:resource="@xml/torch_widget_info" />
         </receiver>
+        <receiver android:name=".GalaxyTorchWidgetReceiver">
+            <intent-filter>
+                <action android:name="com.swijaya.galaxytorch.receive_action" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

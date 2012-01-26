@@ -12,6 +12,8 @@ public class GalaxyTorchWidgetProvider extends AppWidgetProvider {
 
     private static final String TAG = GalaxyTorchWidgetProvider.class.getSimpleName();
 
+    public static final String TORCH_RECEIVE_ACTION = "com.swijaya.galaxytorch.receive_action";
+
     @Override
     public void onUpdate(Context context,
             AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -24,8 +26,10 @@ public class GalaxyTorchWidgetProvider extends AppWidgetProvider {
             int id = appWidgetIds[i];
 
             // create an intent to launch GalaxyTorchWidgetHelperActivity
-            Intent intent = new Intent(context, GalaxyTorchActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            Intent intent = new Intent(context, GalaxyTorchWidgetReceiver.class);
+            intent.setAction(TORCH_RECEIVE_ACTION);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
             // get the layout for the app widget (RemoteViews); then, attach an onClick
             // listener to the button
