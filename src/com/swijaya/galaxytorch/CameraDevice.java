@@ -103,12 +103,18 @@ public class CameraDevice {
             return;
         }
 
+        Log.v(TAG, "Setting preview display with a surface holder...");
         try {
             mCamera.setPreviewDisplay(holder);
         }
         catch (IOException e) {
             Log.e(TAG, "Error setting camera preview: " + e.getLocalizedMessage());
         }
+    }
+
+    public void setPreviewDisplayAndStartPreview(SurfaceHolder holder) {
+        setPreviewDisplay(holder);
+        startPreview();
     }
 
     private boolean supportsTorchMode() {

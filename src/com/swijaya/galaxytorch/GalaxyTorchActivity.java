@@ -18,6 +18,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private ImageButton mToggleButton;
 
     private CameraDevice mCameraDevice;     // helper object to acquire and control the camera
+    private SurfaceHolder mHolder;          // the currently ACTIVE SurfaceHolder
 
     /* *** BEGIN MAIN ACTIVITY'S LIFE CYCLE CALLBACKS *** */
 
@@ -69,8 +70,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStart();
         Log.v(TAG, "onStart");
 
+        // when we get there from onPause(), the camera would have been released and
+        // now re-acquired, but that means the camera has now no surface holder
+        // to flush to! so remember the state of the surface holder, and reset
+        // it immediately after re-acquiring
         mCameraDevice.acquireCamera();
-        //mCameraDevice.startPreview(); // handled in surface callback
+        if (mHolder != null) {
+            mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
+        }
     }
 
     @Override
@@ -89,13 +96,13 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
     }
 
-    @Override
+    /*@Override
     protected void onResume() {
         // the foreground lifetime starts here (called often)
         super.onResume();
         Log.v(TAG, "onResume");
-        mCameraDevice.startPreview();
-    }
+        //mCameraDevice.startPreview();
+    }*/
 
     @Override
     protected void onStop() {
@@ -161,13 +168,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v(TAG, "surfaceCreated");
-        mCameraDevice.setPreviewDisplay(holder);
-        mCameraDevice.startPreview();
+        mHolder = holder;
+        mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.v(TAG, "surfaceDestroyed");
         mCameraDevice.stopPreview();
+        mHolder = null;
     }
 
 }
