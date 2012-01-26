@@ -1,9 +1,6 @@
 package com.swijaya.galaxytorch;
 
-import java.io.IOException;
-
 import android.app.Activity;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -61,8 +58,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 Log.e(TAG, "Cannot toggle camera LED");
             }
         }
-        mCameraDevice.stopPreview();
+        //mCameraDevice.stopPreview();  // handled in surface callback
         mCameraDevice.releaseCamera();
+        mToggleButton.setSelected(false);
     }
 
     @Override
@@ -72,7 +70,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "onStart");
 
         mCameraDevice.acquireCamera();
-        mCameraDevice.startPreview();
+        //mCameraDevice.startPreview(); // handled in surface callback
     }
 
     @Override
@@ -85,16 +83,19 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         if (mCameraDevice.isFlashlightOn()) {
             if (!mCameraDevice.toggleCameraLED(false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
+                return;
             }
+            mToggleButton.setSelected(false);
         }
     }
 
-    /*@Override
+    @Override
     protected void onResume() {
         // the foreground lifetime starts here (called often)
         super.onResume();
         Log.v(TAG, "onResume");
-    }*/
+        mCameraDevice.startPreview();
+    }
 
     @Override
     protected void onStop() {
@@ -102,7 +103,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStop();
         Log.v(TAG, "onStop");
 
-        mCameraDevice.stopPreview();
+        //mCameraDevice.stopPreview();
+        // don't stop preview too early; releaseCamera() does it anyway and
+        // it might need the preview to toggle the torch OFF cleanly
         mCameraDevice.releaseCamera();
     }
 
@@ -158,20 +161,13 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v(TAG, "surfaceCreated");
-        Camera camera = mCameraDevice.getCamera();
-        if (camera == null) {
-            Log.wtf(TAG, "!! surfaceCreated called with NULL camera");
-            return;
-        }
-        try {
-            camera.setPreviewDisplay(holder);
-        } catch (IOException e) {
-            Log.e(TAG, "Error setting camera preview: " + e.getLocalizedMessage());
-        }
+        mCameraDevice.setPreviewDisplay(holder);
+        mCameraDevice.startPreview();
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.v(TAG, "surfaceDestroyed");
+        mCameraDevice.stopPreview();
     }
 
 }
