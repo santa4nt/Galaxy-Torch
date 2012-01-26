@@ -6,11 +6,10 @@ com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.a:
     boolean mIsPreviewStarted -> e
     boolean $assertionsDisabled -> f
     boolean isFlashlightOn() -> a
-    android.hardware.Camera getCamera() -> b
-    boolean acquireCamera() -> c
-    void releaseCamera() -> d
-    void stopPreview() -> e
-    void startPreview() -> f
+    boolean acquireCamera() -> b
+    void releaseCamera() -> c
+    void stopPreview() -> d
+    void setPreviewDisplayAndStartPreview(android.view.SurfaceHolder) -> a
     boolean toggleCameraLED(boolean) -> a
 com.swijaya.galaxytorch.CameraDevice$Torch -> com.swijaya.galaxytorch.b:
     boolean toggleTorch(android.hardware.Camera,boolean) -> a
@@ -22,7 +21,8 @@ com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTor
     android.view.SurfaceView mCameraPreview -> b
     android.widget.ImageButton mToggleButton -> c
     com.swijaya.galaxytorch.CameraDevice mCameraDevice -> d
-    boolean $assertionsDisabled -> e
+    android.view.SurfaceHolder mHolder -> e
+    boolean $assertionsDisabled -> f
     void onCreate(android.os.Bundle) -> onCreate
     void onDestroy() -> onDestroy
     void onStart() -> onStart
@@ -32,6 +32,3 @@ com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTor
     void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
     void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
     void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
-com.swijaya.galaxytorch.GalaxyTorchWidgetProvider -> com.swijaya.galaxytorch.GalaxyTorchWidgetProvider:
-    java.lang.String TAG -> a
-    void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[]) -> onUpdate
