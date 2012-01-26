@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/widget_margin" >
-        
+
         <ImageButton
-	        android:id="@+id/pressbutton"
+	        android:id="@+id/widgetbutton"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:background="@android:color/transparent"
