@@ -1,9 +1,6 @@
 package com.swijaya.galaxytorch;
 
-import java.io.IOException;
-
 import android.app.Activity;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -21,6 +18,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private ImageButton mToggleButton;
 
     private CameraDevice mCameraDevice;     // helper object to acquire and control the camera
+    private SurfaceHolder mHolder;          // the currently ACTIVE SurfaceHolder
 
     /* *** BEGIN MAIN ACTIVITY'S LIFE CYCLE CALLBACKS *** */
 
@@ -61,8 +59,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 Log.e(TAG, "Cannot toggle camera LED");
             }
         }
-        mCameraDevice.stopPreview();
+        //mCameraDevice.stopPreview();  // handled in surface callback
         mCameraDevice.releaseCamera();
+        mToggleButton.setSelected(false);
     }
 
     @Override
@@ -71,8 +70,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStart();
         Log.v(TAG, "onStart");
 
+        // when we get there from onPause(), the camera would have been released and
+        // now re-acquired, but that means the camera has now no surface holder
+        // to flush to! so remember the state of the surface holder, and reset
+        // it immediately after re-acquiring
         mCameraDevice.acquireCamera();
-        mCameraDevice.startPreview();
+        if (mHolder != null) {
+            mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
+        }
     }
 
     @Override
@@ -85,7 +90,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         if (mCameraDevice.isFlashlightOn()) {
             if (!mCameraDevice.toggleCameraLED(false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
+                return;
             }
+            mToggleButton.setSelected(false);
         }
     }
 
@@ -94,6 +101,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // the foreground lifetime starts here (called often)
         super.onResume();
         Log.v(TAG, "onResume");
+        //mCameraDevice.startPreview();
     }*/
 
     @Override
@@ -102,7 +110,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStop();
         Log.v(TAG, "onStop");
 
-        mCameraDevice.stopPreview();
+        //mCameraDevice.stopPreview();
+        // don't stop preview too early; releaseCamera() does it anyway and
+        // it might need the preview to toggle the torch OFF cleanly
         mCameraDevice.releaseCamera();
     }
 
@@ -139,7 +149,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                     + " and it is " + (isTorchOnAfter ? "on" : "off"));
             assert (isTorchOnAfter == !isTorchOn);
             if (isTorchOnAfter == isTorchOn) {
-                Log.wtf(TAG, "Current torch state after toggle did not change!");
+                Log.e(TAG, "Current torch state after toggle did not change");
                 Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_toggle,
                         Toast.LENGTH_LONG).show();
@@ -158,20 +168,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v(TAG, "surfaceCreated");
-        Camera camera = mCameraDevice.getCamera();
-        if (camera == null) {
-            Log.wtf(TAG, "!! surfaceCreated called with NULL camera");
-            return;
-        }
-        try {
-            camera.setPreviewDisplay(holder);
-        } catch (IOException e) {
-            Log.e(TAG, "Error setting camera preview: " + e.getLocalizedMessage());
-        }
+        mHolder = holder;
+        mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.v(TAG, "surfaceDestroyed");
+        mCameraDevice.stopPreview();
+        mHolder = null;
     }
 
 }

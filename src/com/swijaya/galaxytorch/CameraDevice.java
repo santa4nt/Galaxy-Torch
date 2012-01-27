@@ -1,9 +1,11 @@
 package com.swijaya.galaxytorch;
 
+import java.io.IOException;
 import java.util.List;
 
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 public class CameraDevice {
 
@@ -69,17 +71,50 @@ public class CameraDevice {
     }
 
     public void stopPreview() {
-        if (mIsPreviewStarted) {
+        if (mIsPreviewStarted && mCamera != null) {
+            Log.v(TAG, "Stopping preview...");
             mCamera.stopPreview();
             mIsPreviewStarted = false;
         }
     }
 
     public void startPreview() {
-        if (!mIsPreviewStarted) {
+        if (!mIsPreviewStarted && mCamera != null) {
+            Log.v(TAG, "Starting preview...");
             mCamera.startPreview();
             mIsPreviewStarted = true;
         }
+    }
+
+    /**
+     * Supply the underlying camera device with a SurfaceHolder.
+     * Assume that the latter has been fully instantiated. That means,
+     * this method should be called within a SurfaceHolder.Callback.surfaceCreated
+     * callback. This method won't actually tell the camera device
+     * to Camera.startPreview(); do so by calling this wrapper object's
+     * startPreview().
+     * 
+     * @param holder a fully instantiated SurfaceHolder
+     */
+    public void setPreviewDisplay(SurfaceHolder holder) {
+        assert (mCamera != null);
+        if (mCamera == null) {
+            Log.wtf(TAG, "surfaceCreated called with NULL camera!");
+            return;
+        }
+
+        Log.v(TAG, "Setting preview display with a surface holder...");
+        try {
+            mCamera.setPreviewDisplay(holder);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Error setting camera preview: " + e.getLocalizedMessage());
+        }
+    }
+
+    public void setPreviewDisplayAndStartPreview(SurfaceHolder holder) {
+        setPreviewDisplay(holder);
+        startPreview();
     }
 
     private boolean supportsTorchMode() {
