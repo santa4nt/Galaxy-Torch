@@ -5,6 +5,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
@@ -100,9 +101,16 @@ public class GalaxyTorchService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand");
 
-        RemoteViews widgetViews =
-                new RemoteViews(getPackageName(), R.layout.widget);
-        widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
+        // set widget button(s) to its pressed state (drawable)
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        int[] allWidgetIDs = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+        assert (allWidgetIDs != null);
+        for (int widgetID : allWidgetIDs) {
+            RemoteViews widgetViews =
+                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
+            appWidgetManager.updateAppWidget(widgetID, widgetViews);
+        }
 
         // wait until the surface view overlay is created
         mSurfaceLock.lock();
@@ -141,8 +149,14 @@ public class GalaxyTorchService extends Service {
             // TODO: maybe try another strategy?
         }
 
-        widgetViews.setImageViewResource(R.id.widgetbutton,
-                isTorchOnAfter ? R.drawable.button_on : R.drawable.button_off);
+        // set widget button(s) to its appropriate state (drawable)
+        for (int widgetID : allWidgetIDs) {
+            RemoteViews widgetViews =
+                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+            widgetViews.setImageViewResource(R.id.widgetbutton,
+                    isTorchOnAfter ? R.drawable.button_on : R.drawable.button_off);
+            appWidgetManager.updateAppWidget(widgetID, widgetViews);
+        }
 
         if (!isTorchOnAfter) {
             // after toggling off, kill this service
