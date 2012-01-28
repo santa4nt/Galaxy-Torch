@@ -8,6 +8,7 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -95,74 +96,124 @@ public class GalaxyTorchService extends Service {
         //mCameraDevice.stopPreview();  // handled in surface callback
         mCameraDevice.releaseCamera();
         mCameraDevice = null;
+
+        // remove the overlay
+        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wm.removeView(mOverlay);
+        mOverlay = null;
+        mSurfaceView = null;
+    }
+
+    /**
+     * A background task worker to toggle the torch on.
+     * 
+     * We have to resort to using AsyncTask because onCreate() -> onStart()
+     * and SurfaceHolder.Callback for the creation of the preview surface
+     * defined in the former are all done within a single thread.
+     * 
+     * As it happens, the service's two life cycle callbacks are most likely
+     * to be called first before the SurfaceHolder's. This means that when
+     * it comes time to toggle the camera's LED within onStart(), the surface
+     * won't be ready. Putting locks around the surface holder won't work
+     * without moving the one task in a separate thread. Hence, this
+     * AsyncTask definition.
+     * 
+     * @author santa
+     *
+     */
+    private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final AppWidgetManager mAppWidgetManager =
+                AppWidgetManager.getInstance(getApplicationContext());
+        private final Intent mIntent;
+        private int[] mAllWidgetIDs;
+        private boolean mWasTorchOn;
+
+        public TorchToggleTask(Intent intent) {
+            super();
+            mIntent = intent;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.v(TAG, "onPreExecute");
+            mWasTorchOn = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
+            // set widget button(s) to its pressed state (drawable)
+            mAllWidgetIDs = mIntent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+            assert (mAllWidgetIDs != null);
+            for (int widgetID : mAllWidgetIDs) {
+                RemoteViews widgetViews =
+                        new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+                widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
+                mAppWidgetManager.updateAppWidget(widgetID, widgetViews);
+            }
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Log.v(TAG, "doInBackground");
+            mSurfaceLock.lock();
+            try {
+                while (mHolder == null) {
+                    mSurfaceHolderIsSet.await();
+                }
+            }
+            catch (InterruptedException e) {
+                Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
+            }
+            finally {
+                mSurfaceLock.unlock();
+            }
+
+            // actually toggle the LED (in torch mode)
+            return mCameraDevice.toggleCameraLED(!mWasTorchOn);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            Log.v(TAG, "onPostExecute: " + result.toString());
+            if (!result) {
+                Log.e(TAG, "Cannot toggle camera LED");
+            }
+
+            // sanity check
+            boolean isTorchOn = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state should be " + (mWasTorchOn ? "off" : "on")
+                    + " and it is " + (isTorchOn ? "on" : "off"));
+            assert (isTorchOn == !mWasTorchOn);
+            if (isTorchOn == mWasTorchOn) {
+                Log.e(TAG, "Current torch state after toggle did not change");
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_toggle,
+                        Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+                // TODO: maybe try another strategy?
+            }
+
+            // set widget button(s) to its appropriate state (drawable)
+            for (int widgetID : mAllWidgetIDs) {
+                RemoteViews widgetViews =
+                        new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+                widgetViews.setImageViewResource(R.id.widgetbutton,
+                        isTorchOn ? R.drawable.button_on : R.drawable.button_off);
+                mAppWidgetManager.updateAppWidget(widgetID, widgetViews);
+            }
+
+            if (!isTorchOn) {
+                // after toggling off, kill this service
+                Log.v(TAG, "We toggled off. Stopping service...");
+                stopSelf();
+            }
+        }
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand");
-
-        // set widget button(s) to its pressed state (drawable)
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        int[] allWidgetIDs = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-        assert (allWidgetIDs != null);
-        for (int widgetID : allWidgetIDs) {
-            RemoteViews widgetViews =
-                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
-            appWidgetManager.updateAppWidget(widgetID, widgetViews);
-        }
-
-        // wait until the surface view overlay is created
-        mSurfaceLock.lock();
-        try {
-            while (mHolder == null) {
-                mSurfaceHolderIsSet.await();
-            }
-        }
-        catch (InterruptedException e) {
-            Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
-        }
-        finally {
-            mSurfaceLock.unlock();
-        }
-
-        boolean isTorchOn = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
-
-        // actually toggle the LED (in torch mode)
-        if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
-            Log.e(TAG, "Cannot toggle camera LED");
-        }
-
-        // sanity check
-        boolean isTorchOnAfter = mCameraDevice.isFlashlightOn();
-        Log.v(TAG, "Current torch state should be " + (isTorchOn ? "off" : "on")
-                + " and it is " + (isTorchOnAfter ? "on" : "off"));
-        assert (isTorchOnAfter == !isTorchOn);
-        if (isTorchOnAfter == isTorchOn) {
-            Log.e(TAG, "Current torch state after toggle did not change");
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    R.string.err_cannot_toggle,
-                    Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            toast.show();
-            // TODO: maybe try another strategy?
-        }
-
-        // set widget button(s) to its appropriate state (drawable)
-        for (int widgetID : allWidgetIDs) {
-            RemoteViews widgetViews =
-                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton,
-                    isTorchOnAfter ? R.drawable.button_on : R.drawable.button_off);
-            appWidgetManager.updateAppWidget(widgetID, widgetViews);
-        }
-
-        if (!isTorchOnAfter) {
-            // after toggling off, kill this service
-            stopSelf();
-        }
-
+        new TorchToggleTask(intent).execute();
         return super.onStartCommand(intent, flags, startId);
     }
 
