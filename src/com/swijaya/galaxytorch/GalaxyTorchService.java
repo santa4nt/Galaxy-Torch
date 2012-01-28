@@ -222,11 +222,10 @@ public class GalaxyTorchService extends Service {
      */
     private void createOverlay() {
         assert (mOverlay == null);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.FILL_PARENT, 150,
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(1, 1,
                 WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,  // technically automatically set by FLAG_NOT_FOCUSABLE
                 PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.BOTTOM;
 
