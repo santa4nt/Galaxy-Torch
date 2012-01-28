@@ -32,11 +32,13 @@
             <meta-data android:name="android.appwidget.provider" 
                        android:resource="@xml/torch_widget_info" />
         </receiver>
-        <receiver android:name=".GalaxyTorchWidgetReceiver">
+        <service android:name=".GalaxyTorchService">
+            <!-- since (currently) we are only consuming this service locally, ignore
             <intent-filter>
-                <action android:name="com.swijaya.galaxytorch.receive_action" />
+                <action android:name="com.swijaya.galaxytorch.toggle_action" />
             </intent-filter>
-        </receiver>
+            -->
+        </service>
     </application>
 
 </manifest>

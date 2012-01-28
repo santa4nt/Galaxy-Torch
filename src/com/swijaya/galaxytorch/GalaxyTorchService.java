@@ -3,50 +3,51 @@ package com.swijaya.galaxytorch;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 
 public class GalaxyTorchService extends Service {
 
     private static final String TAG = GalaxyTorchService.class.getSimpleName();
 
-    class TorchHandler extends Handler {
-
-        @Override
-        public void handleMessage(Message msg) {
-            Log.v(TAG, "handleMessage: " + msg.what);
-        }
-
-    }
-
-    private final Messenger mMessenger = new Messenger(new TorchHandler());
+    private CameraDevice mCameraDevice;
 
     private LinearLayout mOverlay;
     private SurfaceView mSurfaceView;
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mMessenger.getBinder();
+        return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.v(TAG, "onCreate");
+        mCameraDevice = new CameraDevice();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(TAG, "onDestrpy");
+        Log.v(TAG, "onDestroy");
+        mCameraDevice = null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.v(TAG, "Service " + TAG + " starting");
+
+        RemoteViews widgetViews =
+                new RemoteViews(getPackageName(), R.layout.widget);
+
+        return super.onStartCommand(intent, flags, startId);
     }
 
     /**
