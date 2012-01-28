@@ -38,6 +38,49 @@ public class GalaxyTorchService extends Service {
         return null;
     }
 
+    /**
+     * This callback implementations should be called from a thread separate to
+     * the task that needs to be done in onStart().
+     * 
+     * The reason is that the service's life cycle callback onStart() will need
+     * to wait for the surface holder to be created, and these callbacks also
+     * happen to be called by the system on the same GUI thread as the service's.
+     * 
+     * @author santa
+     *
+     */
+    private class SurfaceKeeper implements SurfaceHolder.Callback {
+
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            Log.v(TAG, "(overlay) surfaceDestroyed");
+        }
+
+        public void surfaceCreated(SurfaceHolder holder) {
+            Log.v(TAG, "(overlay) surfaceCreated");
+            if (mCameraDevice == null) {
+                Log.w(TAG, "surfaceCreated: Camera device has not been instantiated");
+                return;
+            }
+
+            // atomically set the surface holder and start camera preview
+            mSurfaceLock.lock();
+            try {
+                mHolder = holder;
+                mCameraDevice.setPreviewDisplayAndStartPreview(holder);
+                mSurfaceHolderIsSet.signalAll();
+            }
+            finally {
+                mSurfaceLock.unlock();
+            }
+        }
+
+        public void surfaceChanged(SurfaceHolder holder, int format, int width,
+                int height) {
+            Log.v(TAG, "(overlay) surfaceChanged");
+        }
+
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -48,36 +91,7 @@ public class GalaxyTorchService extends Service {
 
         createOverlay();    // this gives us the surface view the camera device needs
         SurfaceHolder holder = mSurfaceView.getHolder();
-        holder.addCallback(new SurfaceHolder.Callback() {
-
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                Log.v(TAG, "(overlay) surfaceDestroyed");
-            }
-
-            public void surfaceCreated(SurfaceHolder holder) {
-                Log.v(TAG, "(overlay) surfaceCreated");
-                if (mCameraDevice == null) {
-                    Log.w(TAG, "surfaceCreated: Camera device has not been instantiated");
-                    return;
-                }
-
-                // atomically set the surface holder and start camera preview
-                mSurfaceLock.lock();
-                try {
-                    mHolder = holder;
-                    mCameraDevice.setPreviewDisplayAndStartPreview(holder);
-                    mSurfaceHolderIsSet.signalAll();
-                }
-                finally {
-                    mSurfaceLock.unlock();
-                }
-            }
-
-            public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                    int height) {
-                Log.v(TAG, "(overlay) surfaceChanged");
-            }
-        });
+        holder.addCallback(new SurfaceKeeper());
         // deprecated
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
