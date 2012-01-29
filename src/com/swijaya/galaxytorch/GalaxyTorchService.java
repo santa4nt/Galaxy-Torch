@@ -4,6 +4,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -33,6 +35,8 @@ public class GalaxyTorchService extends Service {
 
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
+
+    private static final int ONGOING_NOTIFICATION = 1;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -206,9 +210,28 @@ public class GalaxyTorchService extends Service {
                     isTorchOn ? R.drawable.lightbulb_widget_on : R.drawable.lightbulb_widget_off);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
 
-            if (!isTorchOn) {
+            if (isTorchOn) {
+                Log.v(TAG, "We toggled on. Creating an ongoing notification and start foreground service.");
+                // we've turned on the torch; bring the service to foreground and
+                // and notify user
+                Notification notification = new Notification(
+                        R.drawable.lightbulb_notify,
+                        getText(R.string.notify_toggle_on),
+                        System.currentTimeMillis());
+                Intent notificationIntent = new Intent(GalaxyTorchService.this,
+                        GalaxyTorchService.class);
+                PendingIntent pendingIntent = PendingIntent.getService(
+                        GalaxyTorchService.this, 0, notificationIntent, 0);
+                notification.setLatestEventInfo(
+                        GalaxyTorchService.this,
+                        getText(R.string.notify_toggle_on),
+                        getText(R.string.notify_toggle_on_ext),
+                        pendingIntent);
+                startForeground(ONGOING_NOTIFICATION, notification);
+            } else {
                 // after toggling off, kill this service
                 Log.v(TAG, "We toggled off. Stopping service...");
+                //stopForeground(true); // should be done through stopSelf() already
                 stopSelf();
             }
         }
