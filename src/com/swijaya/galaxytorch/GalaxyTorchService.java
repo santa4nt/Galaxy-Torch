@@ -153,15 +153,15 @@ public class GalaxyTorchService extends Service {
             Log.v(TAG, "onPreExecute");
             mWasTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
-            // set widget button(s) to its pressed state (drawable)
+            // set widget background(s) to its pressed state (drawable)
             mAllWidgetIDs = mIntent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
             assert (mAllWidgetIDs != null);
-            for (int widgetID : mAllWidgetIDs) {
+            /*for (int widgetID : mAllWidgetIDs) {
                 RemoteViews widgetViews =
                         new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
                 widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
                 mAppWidgetManager.updateAppWidget(widgetID, widgetViews);
-            }
+            }*/
         }
 
         @Override
@@ -206,12 +206,12 @@ public class GalaxyTorchService extends Service {
                 // TODO: maybe try another strategy?
             }
 
-            // set widget button(s) to its appropriate state (drawable)
+            // set widget button(s) image to its appropriate state (drawable)
             for (int widgetID : mAllWidgetIDs) {
                 RemoteViews widgetViews =
                         new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
                 widgetViews.setImageViewResource(R.id.widgetbutton,
-                        isTorchOn ? R.drawable.button_on : R.drawable.button_off);
+                        isTorchOn ? R.drawable.lightbulb_widget_on : R.drawable.lightbulb_widget_off);
                 mAppWidgetManager.updateAppWidget(widgetID, widgetViews);
             }
 
