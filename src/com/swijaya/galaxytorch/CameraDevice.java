@@ -118,6 +118,9 @@ public class CameraDevice {
     }
 
     private boolean supportsTorchMode() {
+        if (mCamera == null)
+            return false;
+
         Camera.Parameters params = mCamera.getParameters();
         List<String> flashModes = params.getSupportedFlashModes();
         return (flashModes != null) &&
@@ -134,6 +137,11 @@ public class CameraDevice {
      */
     public boolean toggleCameraLED(boolean on) {
         assert (mCamera != null);
+        if (mCamera == null) {
+            Log.wtf(TAG, "toggling with NULL camera!");
+            return false;
+        }
+
         // check if the camera's flashlight supports torch mode
         if (!supportsTorchMode()) {
             // for now, bail early

@@ -3,6 +3,7 @@ package com.swijaya.galaxytorch;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -74,7 +75,17 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // now re-acquired, but that means the camera has now no surface holder
         // to flush to! so remember the state of the surface holder, and reset
         // it immediately after re-acquiring
-        mCameraDevice.acquireCamera();
+        if (!mCameraDevice.acquireCamera()) {
+            // bail fast if we cannot acquire the camera device to begin with
+            // perhaps the widget (and therefore the service) is holding it,
+            // or some other background service outside of our control
+            Log.e(TAG, "Cannot acquire camera. Closing activity.");
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.err_cannot_acquire, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            finish();
+        }
         if (mHolder != null) {
             mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
         }
