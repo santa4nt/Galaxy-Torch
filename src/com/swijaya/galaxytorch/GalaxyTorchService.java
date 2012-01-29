@@ -156,12 +156,12 @@ public class GalaxyTorchService extends Service {
             // set widget background(s) to its pressed state (drawable)
             mAllWidgetIDs = mIntent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
             assert (mAllWidgetIDs != null);
-            /*for (int widgetID : mAllWidgetIDs) {
+            for (int widgetID : mAllWidgetIDs) {
                 RemoteViews widgetViews =
                         new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-                widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.button_pressed);
+                widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.lightbulb_widget_on);    // TODO: make an intermediary state
                 mAppWidgetManager.updateAppWidget(widgetID, widgetViews);
-            }*/
+            }
         }
 
         @Override
