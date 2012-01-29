@@ -153,7 +153,7 @@ public class GalaxyTorchService extends Service {
             // set widget background(s) to its pressed state (drawable)
             RemoteViews widgetViews =
                     new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.lightbulb_widget_on);    // TODO: make an intermediary state
+            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.appwidget_dark_bg_focused);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
         }
 
@@ -203,7 +203,7 @@ public class GalaxyTorchService extends Service {
             RemoteViews widgetViews =
                     new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
             widgetViews.setImageViewResource(R.id.widgetbutton,
-                    isTorchOn ? R.drawable.lightbulb_widget_on : R.drawable.lightbulb_widget_off);
+                    isTorchOn ? R.drawable.appwidget_dark_bg_pressed : R.drawable.appwidget_dark_bg_clickable);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
 
             if (!isTorchOn) {
