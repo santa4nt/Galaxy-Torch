@@ -6,6 +6,6 @@
     <string name="err_cannot_acquire">Cannot acquire camera resources!</string>
     <string name="err_cannot_toggle">Cannot toggle camera LED!</string>
     <string name="notify_toggle_on">Flashlight LED turned on</string>
-    <string name="notify_toggle_on_ext">Flashlight LED turned on. Tap to turn off.</string>
+    <string name="notify_toggle_on_ext">Tap to turn off.</string>
 
 </resources>
