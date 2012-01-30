@@ -45,12 +45,13 @@ com.swijaya.galaxytorch.GalaxyTorchService -> com.swijaya.galaxytorch.GalaxyTorc
     void onCreate() -> onCreate
     void onDestroy() -> onDestroy
     int onStartCommand(android.content.Intent,int,int) -> onStartCommand
-    java.lang.String access$000() -> a
-    com.swijaya.galaxytorch.CameraDevice access$100(com.swijaya.galaxytorch.GalaxyTorchService) -> a
-    java.util.concurrent.locks.Lock access$200(com.swijaya.galaxytorch.GalaxyTorchService) -> b
-    android.view.SurfaceHolder access$302(com.swijaya.galaxytorch.GalaxyTorchService,android.view.SurfaceHolder) -> a
-    java.util.concurrent.locks.Condition access$400(com.swijaya.galaxytorch.GalaxyTorchService) -> c
-    android.view.SurfaceHolder access$300(com.swijaya.galaxytorch.GalaxyTorchService) -> d
+    java.lang.String access$0() -> a
+    com.swijaya.galaxytorch.CameraDevice access$1(com.swijaya.galaxytorch.GalaxyTorchService) -> a
+    java.util.concurrent.locks.Lock access$2(com.swijaya.galaxytorch.GalaxyTorchService) -> b
+    void access$3(com.swijaya.galaxytorch.GalaxyTorchService,android.view.SurfaceHolder) -> a
+    java.util.concurrent.locks.Condition access$4(com.swijaya.galaxytorch.GalaxyTorchService) -> c
+    android.view.SurfaceHolder access$5(com.swijaya.galaxytorch.GalaxyTorchService) -> d
+    android.app.Notification access$6(com.swijaya.galaxytorch.GalaxyTorchService) -> e
 com.swijaya.galaxytorch.GalaxyTorchService$SurfaceKeeper -> com.swijaya.galaxytorch.b:
     com.swijaya.galaxytorch.GalaxyTorchService this$0 -> a
     void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
@@ -60,8 +61,8 @@ com.swijaya.galaxytorch.GalaxyTorchService$TorchToggleTask -> com.swijaya.galaxy
     android.appwidget.AppWidgetManager mAppWidgetManager -> a
     android.content.ComponentName mThisWidget -> b
     boolean mWasTorchOn -> c
-    boolean $assertionsDisabled -> d
-    com.swijaya.galaxytorch.GalaxyTorchService this$0 -> e
+    com.swijaya.galaxytorch.GalaxyTorchService this$0 -> d
+    boolean $assertionsDisabled -> e
     void onPreExecute() -> onPreExecute
     java.lang.Boolean doInBackground$5f8445a4() -> a
     void onPostExecute(java.lang.Object) -> onPostExecute
