@@ -4,9 +4,12 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
@@ -33,6 +36,10 @@ public class GalaxyTorchService extends Service {
 
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
+
+    private final Context mApplicationContext = getApplicationContext();
+
+    private static final int ONGOING_NOTIFICATION = 1;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -139,7 +146,7 @@ public class GalaxyTorchService extends Service {
     private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
 
         private final AppWidgetManager mAppWidgetManager =
-                AppWidgetManager.getInstance(getApplicationContext());
+                AppWidgetManager.getInstance(mApplicationContext);
         private ComponentName mThisWidget;
         private boolean mWasTorchOn;
 
@@ -148,7 +155,7 @@ public class GalaxyTorchService extends Service {
             Log.v(TAG, "onPreExecute");
             mWasTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
-            mThisWidget = new ComponentName(getApplicationContext(),
+            mThisWidget = new ComponentName(mApplicationContext,
                     GalaxyTorchWidgetProvider.class);
             // set widget background(s) to its pressed state (drawable)
             RemoteViews widgetViews =
@@ -191,7 +198,7 @@ public class GalaxyTorchService extends Service {
             assert (isTorchOn == !mWasTorchOn);
             if (isTorchOn == mWasTorchOn) {
                 Log.e(TAG, "Current torch state after toggle did not change");
-                Toast toast = Toast.makeText(getApplicationContext(),
+                Toast toast = Toast.makeText(mApplicationContext,
                         R.string.err_cannot_toggle,
                         Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
@@ -201,14 +208,20 @@ public class GalaxyTorchService extends Service {
 
             // set widget button(s) image to its appropriate state (drawable)
             RemoteViews widgetViews =
-                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+                    new RemoteViews(mApplicationContext.getPackageName(), R.layout.widget);
             widgetViews.setImageViewResource(R.id.widgetbutton,
                     isTorchOn ? R.drawable.appwidget_dark_bg_pressed : R.drawable.appwidget_dark_bg_clickable);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
 
-            if (!isTorchOn) {
+            if (isTorchOn) {
+                Log.v(TAG, "We toggled on. Creating an ongoing notification and start foreground service.");
+                // we've turned on the torch; bring the service to foreground and
+                // and notify user
+                startForeground(ONGOING_NOTIFICATION, createToggleNotification());
+            } else {
                 // after toggling off, kill this service
                 Log.v(TAG, "We toggled off. Stopping service...");
+                //stopForeground(true); // stopSelf() would also remove notification
                 stopSelf();
             }
         }
@@ -240,6 +253,28 @@ public class GalaxyTorchService extends Service {
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         wm.addView(mOverlay, params);
+    }
+
+    /**
+     * Create a status bar notification to tell the user that we are holding
+     * the camera device's resources and setting its flashlight LED's torch
+     * mode on.
+     */
+    private Notification createToggleNotification() {
+        int icon = R.drawable.lightbulb_notify;
+        CharSequence tickerText = getText(R.string.notify_toggle_on);
+        long when = System.currentTimeMillis();
+        Context context = mApplicationContext;
+        CharSequence contentTitle = getText(R.string.notify_toggle_on);
+        CharSequence contentText = getText(R.string.notify_toggle_on_ext);
+
+        Intent notificationIntent = new Intent(this, GalaxyTorchService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, notificationIntent, 0);
+
+        Notification notification = new Notification(icon, tickerText, when);
+        notification.setLatestEventInfo(context, contentTitle, contentText, pendingIntent);
+
+        return notification;
     }
 
 }
