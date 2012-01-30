@@ -217,22 +217,7 @@ public class GalaxyTorchService extends Service {
                 Log.v(TAG, "We toggled on. Creating an ongoing notification and start foreground service.");
                 // we've turned on the torch; bring the service to foreground and
                 // and notify user
-                int icon = R.drawable.lightbulb_notify;
-                CharSequence tickerText = getText(R.string.notify_toggle_on);
-                long when = System.currentTimeMillis();
-                Context context = mApplicationContext;
-                CharSequence contentTitle = getText(R.string.notify_toggle_on);
-                CharSequence contentText = getText(R.string.notify_toggle_on_ext);
-
-                Intent notificationIntent = new Intent(GalaxyTorchService.this,
-                        GalaxyTorchService.class);
-                PendingIntent pendingIntent = PendingIntent.getService(
-                        GalaxyTorchService.this, 0, notificationIntent, 0);
-
-                Notification notification = new Notification(icon, tickerText, when);
-                notification.setLatestEventInfo(context, contentTitle, contentText, pendingIntent);
-
-                startForeground(ONGOING_NOTIFICATION, notification);
+                startForeground(ONGOING_NOTIFICATION, createToggleNotification());
             } else {
                 // after toggling off, kill this service
                 Log.v(TAG, "We toggled off. Stopping service...");
@@ -268,6 +253,28 @@ public class GalaxyTorchService extends Service {
 
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         wm.addView(mOverlay, params);
+    }
+
+    /**
+     * Create a status bar notification to tell the user that we are holding
+     * the camera device's resources and setting its flashlight LED's torch
+     * mode on.
+     */
+    private Notification createToggleNotification() {
+        int icon = R.drawable.lightbulb_notify;
+        CharSequence tickerText = getText(R.string.notify_toggle_on);
+        long when = System.currentTimeMillis();
+        Context context = mApplicationContext;
+        CharSequence contentTitle = getText(R.string.notify_toggle_on);
+        CharSequence contentText = getText(R.string.notify_toggle_on_ext);
+
+        Intent notificationIntent = new Intent(this, GalaxyTorchService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, notificationIntent, 0);
+
+        Notification notification = new Notification(icon, tickerText, when);
+        notification.setLatestEventInfo(context, contentTitle, contentText, pendingIntent);
+
+        return notification;
     }
 
 }
