@@ -37,8 +37,6 @@ public class GalaxyTorchService extends Service {
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
 
-    private final Context mApplicationContext = getApplicationContext();
-
     private static final int ONGOING_NOTIFICATION = 1;
 
     @Override
@@ -146,7 +144,7 @@ public class GalaxyTorchService extends Service {
     private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
 
         private final AppWidgetManager mAppWidgetManager =
-                AppWidgetManager.getInstance(mApplicationContext);
+                AppWidgetManager.getInstance(getApplicationContext());
         private ComponentName mThisWidget;
         private boolean mWasTorchOn;
 
@@ -155,12 +153,12 @@ public class GalaxyTorchService extends Service {
             Log.v(TAG, "onPreExecute");
             mWasTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
-            mThisWidget = new ComponentName(mApplicationContext,
+            mThisWidget = new ComponentName(getApplicationContext(),
                     GalaxyTorchWidgetProvider.class);
             // set widget background(s) to its pressed state (drawable)
             RemoteViews widgetViews =
-                    new RemoteViews(mApplicationContext.getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.lightbulb_widget_on);    // TODO: make an intermediary state
+                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
+            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.wg_light_focus);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
         }
 
@@ -198,7 +196,7 @@ public class GalaxyTorchService extends Service {
             assert (isTorchOn == !mWasTorchOn);
             if (isTorchOn == mWasTorchOn) {
                 Log.e(TAG, "Current torch state after toggle did not change");
-                Toast toast = Toast.makeText(mApplicationContext,
+                Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_toggle,
                         Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
@@ -208,9 +206,9 @@ public class GalaxyTorchService extends Service {
 
             // set widget button(s) image to its appropriate state (drawable)
             RemoteViews widgetViews =
-                    new RemoteViews(mApplicationContext.getPackageName(), R.layout.widget);
+                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
             widgetViews.setImageViewResource(R.id.widgetbutton,
-                    isTorchOn ? R.drawable.lightbulb_widget_on : R.drawable.lightbulb_widget_off);
+                    isTorchOn ? R.drawable.wg_light_on : R.drawable.widget_light);
             mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
 
             if (isTorchOn) {
@@ -264,7 +262,7 @@ public class GalaxyTorchService extends Service {
         int icon = R.drawable.lightbulb_notify;
         CharSequence tickerText = getText(R.string.notify_toggle_on);
         long when = System.currentTimeMillis();
-        Context context = mApplicationContext;
+        Context context = getApplicationContext();
         CharSequence contentTitle = getText(R.string.notify_toggle_on);
         CharSequence contentText = getText(R.string.notify_toggle_on_ext);
 

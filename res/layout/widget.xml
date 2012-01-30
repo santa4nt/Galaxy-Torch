@@ -10,6 +10,6 @@
 	        android:layout_height="match_parent"
 	        android:background="@android:color/transparent"
 	        android:contentDescription="@string/pressme"
-	        android:src="@drawable/lightbulb_widget_off" />
+	        android:src="@drawable/widget_light" />
 
 </FrameLayout>
