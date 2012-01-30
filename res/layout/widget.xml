@@ -10,6 +10,6 @@
 	        android:layout_height="match_parent"
 	        android:background="@android:color/transparent"
 	        android:contentDescription="@string/pressme"
-	        android:src="@drawable/appwidget_dark_bg_clickable" />
+	        android:src="@drawable/widget_light" />
 
 </FrameLayout>
