@@ -37,7 +37,47 @@ public class GalaxyTorchService extends Service {
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
 
+    private final AppWidgetManager mAppWidgetManager =
+            AppWidgetManager.getInstance(getApplicationContext());
+    private final ComponentName mThisWidget = new ComponentName(getApplicationContext(),
+            GalaxyTorchWidgetProvider.class);
+
     private static final int ONGOING_NOTIFICATION = 1;
+
+    private enum WidgetState {
+        OFF(R.drawable.widget_light),
+        ON(R.drawable.wg_light_on),
+        FOCUS(R.drawable.wg_light_focus);
+
+        /**
+         * The drawable resource associated with this widget state.
+         */
+        private final int mDrawRes;
+
+        private WidgetState(int drawRes) {
+            mDrawRes = drawRes;
+        }
+
+        public int getDrawable() {
+            return mDrawRes;
+        }
+    }
+
+    private void setWidgetState(WidgetState state) {
+        Context ctx = getApplicationContext();
+        RemoteViews widgetViews =
+                new RemoteViews(ctx.getPackageName(), R.layout.widget);
+        widgetViews.setImageViewResource(R.id.widgetbutton, state.getDrawable());
+        // refresh the button's onClick pending intent
+        // create an intent to launch GalaxyTorchWidgetHelperActivity
+        Intent intent = new Intent(ctx, GalaxyTorchService.class);
+        //intent.setAction(TORCH_TOGGLE_ACTION);
+        PendingIntent pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
+        widgetViews.setOnClickPendingIntent(R.id.widgetbutton, pendingIntent);
+
+        // finally, set (refresh) the remote views
+        mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -143,9 +183,6 @@ public class GalaxyTorchService extends Service {
      */
     private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final AppWidgetManager mAppWidgetManager =
-                AppWidgetManager.getInstance(getApplicationContext());
-        private ComponentName mThisWidget;
         private boolean mWasTorchOn;
 
         @Override
@@ -153,13 +190,8 @@ public class GalaxyTorchService extends Service {
             Log.v(TAG, "onPreExecute");
             mWasTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
-            mThisWidget = new ComponentName(getApplicationContext(),
-                    GalaxyTorchWidgetProvider.class);
             // set widget background(s) to its pressed state (drawable)
-            RemoteViews widgetViews =
-                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton, R.drawable.wg_light_focus);
-            mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
+            setWidgetState(WidgetState.FOCUS);
         }
 
         @Override
@@ -205,11 +237,7 @@ public class GalaxyTorchService extends Service {
             }
 
             // set widget button(s) image to its appropriate state (drawable)
-            RemoteViews widgetViews =
-                    new RemoteViews(getApplicationContext().getPackageName(), R.layout.widget);
-            widgetViews.setImageViewResource(R.id.widgetbutton,
-                    isTorchOn ? R.drawable.wg_light_on : R.drawable.widget_light);
-            mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
+            setWidgetState(isTorchOn ? WidgetState.ON : WidgetState.OFF);
 
             if (isTorchOn) {
                 Log.v(TAG, "We toggled on. Creating an ongoing notification and start foreground service.");
