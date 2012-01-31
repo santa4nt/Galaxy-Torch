@@ -37,17 +37,12 @@ public class GalaxyTorchService extends Service {
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
 
-    private final AppWidgetManager mAppWidgetManager =
-            AppWidgetManager.getInstance(getApplicationContext());
-    private final ComponentName mThisWidget = new ComponentName(getApplicationContext(),
-            GalaxyTorchWidgetProvider.class);
-
     private static final int ONGOING_NOTIFICATION = 1;
 
     private enum WidgetState {
-        OFF(R.drawable.widget_light),
-        ON(R.drawable.wg_light_on),
-        FOCUS(R.drawable.wg_light_focus);
+        OFF     (R.drawable.widget_light),
+        ON      (R.drawable.wg_light_on),
+        FOCUS   (R.drawable.wg_light_focus);
 
         /**
          * The drawable resource associated with this widget state.
@@ -63,20 +58,25 @@ public class GalaxyTorchService extends Service {
         }
     }
 
-    private void setWidgetState(WidgetState state) {
+    private RemoteViews createWidgetWithState(WidgetState state) {
         Context ctx = getApplicationContext();
         RemoteViews widgetViews =
                 new RemoteViews(ctx.getPackageName(), R.layout.widget);
         widgetViews.setImageViewResource(R.id.widgetbutton, state.getDrawable());
-        // refresh the button's onClick pending intent
-        // create an intent to launch GalaxyTorchWidgetHelperActivity
-        Intent intent = new Intent(ctx, GalaxyTorchService.class);
-        //intent.setAction(TORCH_TOGGLE_ACTION);
-        PendingIntent pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
-        widgetViews.setOnClickPendingIntent(R.id.widgetbutton, pendingIntent);
+        switch (state) {
+        case OFF:
+        case ON:
+            Log.v(TAG, "Renewing pending intent for widget");
+            // refresh the button's onClick pending intent
+            // create an intent to launch GalaxyTorchWidgetHelperActivity
+            Intent intent = new Intent(ctx, GalaxyTorchService.class);
+            //intent.setAction(TORCH_TOGGLE_ACTION);
+            PendingIntent pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
+            widgetViews.setOnClickPendingIntent(R.id.widgetbutton, pendingIntent);
+            break;
+        }
 
-        // finally, set (refresh) the remote views
-        mAppWidgetManager.updateAppWidget(mThisWidget, widgetViews);
+        return widgetViews;
     }
 
     @Override
@@ -185,13 +185,21 @@ public class GalaxyTorchService extends Service {
 
         private boolean mWasTorchOn;
 
+        private AppWidgetManager mAppWidgetManager;
+        private ComponentName mThisWidget;
+
         @Override
         protected void onPreExecute() {
             Log.v(TAG, "onPreExecute");
             mWasTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
-            // set widget background(s) to its pressed state (drawable)
-            setWidgetState(WidgetState.FOCUS);
+
+            // set widget background(s) to its focused state (drawable)
+            mAppWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+            mThisWidget = new ComponentName(getApplicationContext(),
+                    GalaxyTorchWidgetProvider.class);
+            RemoteViews widget = createWidgetWithState(WidgetState.FOCUS);
+            mAppWidgetManager.updateAppWidget(mThisWidget, widget);
         }
 
         @Override
@@ -237,7 +245,9 @@ public class GalaxyTorchService extends Service {
             }
 
             // set widget button(s) image to its appropriate state (drawable)
-            setWidgetState(isTorchOn ? WidgetState.ON : WidgetState.OFF);
+            RemoteViews widget = createWidgetWithState(
+                    isTorchOn ? WidgetState.ON : WidgetState.OFF);
+            mAppWidgetManager.updateAppWidget(mThisWidget, widget);
 
             if (isTorchOn) {
                 Log.v(TAG, "We toggled on. Creating an ongoing notification and start foreground service.");
