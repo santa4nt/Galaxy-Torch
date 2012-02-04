@@ -13,7 +13,7 @@
         android:layout_centerInParent="true"
         android:background="@android:color/transparent"
         android:contentDescription="@string/pressme"
-        android:src="@drawable/button" />
+        android:src="@drawable/switch_button" />
 
     <!-- setting this component's visibility to "invisible" just renders
          my device's (Galaxy Nexus) torch mode not to have any effect!
