@@ -213,6 +213,7 @@ public class GalaxyTorchService extends Service {
             }
             catch (InterruptedException e) {
                 Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
+                return false;
             }
             finally {
                 mSurfaceLock.unlock();
