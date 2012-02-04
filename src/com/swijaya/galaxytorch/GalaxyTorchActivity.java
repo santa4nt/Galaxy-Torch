@@ -3,7 +3,6 @@ package com.swijaya.galaxytorch;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -82,7 +81,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             Log.e(TAG, "Cannot acquire camera. Closing activity.");
             Toast toast = Toast.makeText(getApplicationContext(),
                     R.string.err_cannot_acquire, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
+            //toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
             finish();
         }
@@ -163,7 +162,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 Log.e(TAG, "Current torch state after toggle did not change");
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_toggle, Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
+                //toast.setGravity(Gravity.BOTTOM, 0, 0);
                 toast.show();
                 // TODO: maybe try another strategy?
             }
