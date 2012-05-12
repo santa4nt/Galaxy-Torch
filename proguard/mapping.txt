@@ -1,0 +1,104 @@
+com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.a:
+    java.lang.String TAG -> b
+    android.hardware.Camera mCamera -> c
+    com.swijaya.galaxytorch.CameraDevice$Torch mTorch -> d
+    boolean mIsFlashlightOn -> e
+    boolean mIsPreviewStarted -> f
+    boolean $assertionsDisabled -> a
+    boolean isFlashlightOn() -> a
+    boolean acquireCamera() -> b
+    void releaseCamera() -> c
+    void stopPreview() -> d
+    void setPreviewDisplayAndStartPreview(android.view.SurfaceHolder) -> a
+    boolean toggleCameraLED(boolean) -> a
+com.swijaya.galaxytorch.CameraDevice$Torch -> com.swijaya.galaxytorch.b:
+    boolean toggleTorch(android.hardware.Camera,boolean) -> a
+com.swijaya.galaxytorch.DefaultTorch -> com.swijaya.galaxytorch.c:
+    java.lang.String TAG -> a
+    boolean toggleTorch(android.hardware.Camera,boolean) -> a
+com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTorchActivity:
+    java.lang.String TAG -> a
+    android.view.SurfaceView mCameraPreview -> b
+    android.widget.ImageButton mToggleButton -> c
+    com.swijaya.galaxytorch.CameraDevice mCameraDevice -> d
+    android.view.SurfaceHolder mHolder -> e
+    boolean mOnAtActivityStart -> f
+    java.util.concurrent.locks.Lock mSurfaceLock -> g
+    java.util.concurrent.locks.Condition mSurfaceHolderIsSet -> h
+    void onCreate(android.os.Bundle) -> onCreate
+    void onDestroy() -> onDestroy
+    void onStart() -> onStart
+    void onPause() -> onPause
+    void onStop() -> onStop
+    void onClick(android.view.View) -> onClick
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
+    boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
+    java.lang.String access$0(com.swijaya.galaxytorch.GalaxyTorchActivity) -> a
+    com.swijaya.galaxytorch.CameraDevice access$1(com.swijaya.galaxytorch.GalaxyTorchActivity) -> b
+    android.widget.ImageButton access$2(com.swijaya.galaxytorch.GalaxyTorchActivity) -> c
+    android.view.SurfaceHolder access$3(com.swijaya.galaxytorch.GalaxyTorchActivity) -> d
+    java.util.concurrent.locks.Lock access$4(com.swijaya.galaxytorch.GalaxyTorchActivity) -> e
+    java.util.concurrent.locks.Condition access$5(com.swijaya.galaxytorch.GalaxyTorchActivity) -> f
+com.swijaya.galaxytorch.GalaxyTorchActivity$TorchToggleTask -> com.swijaya.galaxytorch.d:
+    boolean mWasTorchOn -> c
+    com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> a
+    boolean $assertionsDisabled -> b
+    void onPreExecute() -> onPreExecute
+    java.lang.Boolean doInBackground$5f8445a4() -> a
+    void onPostExecute(java.lang.Object) -> onPostExecute
+    java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+com.swijaya.galaxytorch.GalaxyTorchService -> com.swijaya.galaxytorch.GalaxyTorchService:
+    java.lang.String TAG -> b
+    com.swijaya.galaxytorch.CameraDevice mCameraDevice -> c
+    android.widget.LinearLayout mOverlay -> d
+    android.view.SurfaceView mSurfaceView -> e
+    android.view.SurfaceHolder mHolder -> f
+    java.util.concurrent.locks.Lock mSurfaceLock -> g
+    java.util.concurrent.locks.Condition mSurfaceHolderIsSet -> h
+    int[] $SWITCH_TABLE$com$swijaya$galaxytorch$GalaxyTorchService$WidgetState -> i
+    boolean $assertionsDisabled -> a
+    android.os.IBinder onBind(android.content.Intent) -> onBind
+    void onCreate() -> onCreate
+    void onDestroy() -> onDestroy
+    int onStartCommand(android.content.Intent,int,int) -> onStartCommand
+    java.lang.String access$0() -> a
+    com.swijaya.galaxytorch.CameraDevice access$1(com.swijaya.galaxytorch.GalaxyTorchService) -> a
+    java.util.concurrent.locks.Lock access$2(com.swijaya.galaxytorch.GalaxyTorchService) -> b
+    void access$3(com.swijaya.galaxytorch.GalaxyTorchService,android.view.SurfaceHolder) -> a
+    java.util.concurrent.locks.Condition access$4(com.swijaya.galaxytorch.GalaxyTorchService) -> c
+    android.widget.RemoteViews access$5(com.swijaya.galaxytorch.GalaxyTorchService,com.swijaya.galaxytorch.GalaxyTorchService$WidgetState) -> a
+    android.view.SurfaceHolder access$6(com.swijaya.galaxytorch.GalaxyTorchService) -> d
+    android.app.Notification access$7(com.swijaya.galaxytorch.GalaxyTorchService) -> e
+    int[] $SWITCH_TABLE$com$swijaya$galaxytorch$GalaxyTorchService$WidgetState() -> b
+com.swijaya.galaxytorch.GalaxyTorchService$SurfaceKeeper -> com.swijaya.galaxytorch.e:
+    com.swijaya.galaxytorch.GalaxyTorchService this$0 -> a
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+com.swijaya.galaxytorch.GalaxyTorchService$TorchToggleTask -> com.swijaya.galaxytorch.f:
+    boolean mWasTorchOn -> c
+    android.appwidget.AppWidgetManager mAppWidgetManager -> d
+    android.content.ComponentName mThisWidget -> e
+    com.swijaya.galaxytorch.GalaxyTorchService this$0 -> a
+    boolean $assertionsDisabled -> b
+    void onPreExecute() -> onPreExecute
+    java.lang.Boolean doInBackground$5f8445a4() -> a
+    void onPostExecute(java.lang.Object) -> onPostExecute
+    java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+com.swijaya.galaxytorch.GalaxyTorchService$WidgetState -> com.swijaya.galaxytorch.g:
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState OFF -> a
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState ON -> b
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState FOCUS -> c
+    int mDrawRes -> d
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState[] ENUM$VALUES -> e
+    int getDrawable() -> a
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState[] values() -> values
+    com.swijaya.galaxytorch.GalaxyTorchService$WidgetState valueOf(java.lang.String) -> valueOf
+com.swijaya.galaxytorch.GalaxyTorchSettings -> com.swijaya.galaxytorch.GalaxyTorchSettings:
+    void onCreate(android.os.Bundle) -> onCreate
+com.swijaya.galaxytorch.GalaxyTorchWidgetProvider -> com.swijaya.galaxytorch.GalaxyTorchWidgetProvider:
+    java.lang.String TAG -> a
+    void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[]) -> onUpdate
