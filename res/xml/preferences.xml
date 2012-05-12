@@ -2,7 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/menu_settings" >"
     
-    <CheckBoxPreference android:summary="@string/pref_turn_on_at_start"
+    <CheckBoxPreference android:title="@string/pref_autotoggle_title" 
+        android:summary="@string/pref_autotoggle_summary"
         android:key="onstart"
         android:defaultValue="false" />
     
