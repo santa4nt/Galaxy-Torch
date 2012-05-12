@@ -39,17 +39,27 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class GalaxyTorchActivity extends Activity implements View.OnClickListener, SurfaceHolder.Callback {
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class GalaxyTorchActivity extends Activity implements View.OnClickListener,
+        SurfaceHolder.Callback {
 
     private final String TAG = GalaxyTorchActivity.class.getSimpleName();
 
-    private SurfaceView mCameraPreview;     // should be hidden
+    private SurfaceView mCameraPreview; // should be hidden
     private ImageButton mToggleButton;
 
-    private CameraDevice mCameraDevice;     // helper object to acquire and control the camera
-    private SurfaceHolder mHolder;          // the currently ACTIVE SurfaceHolder
+    private CameraDevice mCameraDevice; // helper object to acquire and control
+                                        // the camera
+    private SurfaceHolder mHolder; // the currently ACTIVE SurfaceHolder
 
-    private boolean mOnAtActivityStart;     // a preference setting whether we turn on the flashlight at activity start
+    private boolean mOnAtActivityStart; // a preference setting whether we turn
+                                        // on the flashlight at activity start
+
+    private final Lock mSurfaceLock = new ReentrantLock();
+    private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
 
     /* *** BEGIN MAIN ACTIVITY'S LIFE CYCLE CALLBACKS *** */
 
@@ -91,7 +101,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 Log.e(TAG, "Cannot toggle camera LED");
             }
         }
-        //mCameraDevice.stopPreview();  // handled in surface callback
+        // mCameraDevice.stopPreview(); // handled in surface callback
         mCameraDevice.releaseCamera();
         mToggleButton.setSelected(false);
     }
@@ -104,7 +114,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         loadPreferences();
 
-        // when we get there from onPause(), the camera would have been released and
+        // when we get there from onPause(), the camera would have been released
+        // and
         // now re-acquired, but that means the camera has now no surface holder
         // to flush to! so remember the state of the surface holder, and reset
         // it immediately after re-acquiring
@@ -115,7 +126,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
             Log.e(TAG, "Cannot acquire camera. Closing activity.");
             Toast toast = Toast.makeText(getApplicationContext(),
                     R.string.err_cannot_acquire, Toast.LENGTH_SHORT);
-            //toast.setGravity(Gravity.BOTTOM, 0, 0);
             toast.show();
             finish();
         }
@@ -124,8 +134,24 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
 
         if (mOnAtActivityStart) {
+            if (mHolder == null) {
+                // wait for the surface holder to be created
+                Log.v(TAG, "Waiting for surface holder to be created...");
+                mSurfaceLock.lock();
+                try {
+                    while (mHolder == null) {
+                        mSurfaceHolderIsSet.await();
+                    }
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
+                    return;
+                } finally {
+                    mSurfaceLock.unlock();
+                }
+            }
+
             Log.v(TAG, "Turning flashlight on at activity start...");
-            // TODO
+            toggle(true);
         }
     }
 
@@ -158,7 +184,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStop();
         Log.v(TAG, "onStop");
 
-        //mCameraDevice.stopPreview();
+        // mCameraDevice.stopPreview();
         // don't stop preview too early; releaseCamera() does it anyway and
         // it might need the preview to toggle the torch OFF cleanly
         mCameraDevice.releaseCamera();
@@ -167,35 +193,43 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     /* *** END MAIN ACTIVITY'S LIFE CYCLE CALLBACK *** */
 
     public void onClick(View v) {
-        mToggleButton.setEnabled(false);
+        boolean isTorchOn = mCameraDevice.isFlashlightOn();
+        toggle(!isTorchOn);
+    }
 
+    private void toggle(boolean on) {
+        mToggleButton.setEnabled(false);
         try {
             boolean isTorchOn = mCameraDevice.isFlashlightOn();
             Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
+            if (on == isTorchOn) {
+                assert (false);
+                Log.wtf(TAG, "Current state is the same!");
+                return;
+            }
+
             if (isTorchOn ^ mToggleButton.isSelected()) {
                 assert (false);
                 Log.wtf(TAG, "Button state does not match device state!");
             }
 
-            // actually toggle the LED (in torch mode)
-            if (!mCameraDevice.toggleCameraLED(!isTorchOn)) {
+            // actually toggle
+            if (!mCameraDevice.toggleCameraLED(on)) {
                 Log.e(TAG, "Cannot toggle camera LED");
             }
 
             // sanity check
             boolean isTorchOnAfter = mCameraDevice.isFlashlightOn();
-            Log.v(TAG, "Current torch state should be " + (isTorchOn ? "off" : "on")
+            Log.v(TAG, "Current torch state should be " + (on ? "on" : "off")
                     + " and it is " + (isTorchOnAfter ? "on" : "off"));
-            assert (isTorchOnAfter == !isTorchOn);
-            if (isTorchOnAfter == isTorchOn) {
+            assert (on == isTorchOnAfter);
+            if (on != isTorchOnAfter) {
                 Log.e(TAG, "Current torch state after toggle did not change");
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.err_cannot_toggle, Toast.LENGTH_SHORT);
-                //toast.setGravity(Gravity.BOTTOM, 0, 0);
                 toast.show();
                 // TODO: maybe try another strategy?
             }
-
             mToggleButton.setSelected(isTorchOnAfter);
         } finally {
             mToggleButton.setEnabled(true);
@@ -208,8 +242,15 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v(TAG, "surfaceCreated");
-        mHolder = holder;
-        mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
+        // atomically set the surface holder and start camera preview
+        mSurfaceLock.lock();
+        try {
+            mHolder = holder;
+            mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
+            mSurfaceHolderIsSet.signalAll();
+        } finally {
+            mSurfaceLock.unlock();
+        }
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
