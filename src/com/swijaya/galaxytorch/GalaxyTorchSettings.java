@@ -1,0 +1,14 @@
+package com.swijaya.galaxytorch;
+
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+
+public class GalaxyTorchSettings extends PreferenceActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.preferences);
+    }
+
+}

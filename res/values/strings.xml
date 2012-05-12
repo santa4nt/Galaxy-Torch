@@ -8,5 +8,6 @@
     <string name="notify_toggle_on">Flashlight LED turned on</string>
     <string name="notify_toggle_on_ext">Tap to turn off.</string>
     <string name="menu_settings">Settings</string>
+    <string name="pref_turn_on_at_start">Turn flashlight on at start</string>
 
 </resources>

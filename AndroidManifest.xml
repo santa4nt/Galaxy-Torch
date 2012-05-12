@@ -48,6 +48,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".GalaxyTorchSettings"
+            android:label="@string/menu_settings" >
+        </activity>
         <receiver android:name=".GalaxyTorchWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

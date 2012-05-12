@@ -24,7 +24,10 @@
 package com.swijaya.galaxytorch;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,12 +49,15 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private CameraDevice mCameraDevice;     // helper object to acquire and control the camera
     private SurfaceHolder mHolder;          // the currently ACTIVE SurfaceHolder
 
+    private boolean mOnAtActivityStart;     // a preference setting whether we turn on the flashlight at activity start
+
     /* *** BEGIN MAIN ACTIVITY'S LIFE CYCLE CALLBACKS *** */
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main);
 
         mToggleButton = (ImageButton) findViewById(R.id.pressbutton);
@@ -96,6 +102,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         super.onStart();
         Log.v(TAG, "onStart");
 
+        loadPreferences();
+
         // when we get there from onPause(), the camera would have been released and
         // now re-acquired, but that means the camera has now no surface holder
         // to flush to! so remember the state of the surface holder, and reset
@@ -114,6 +122,18 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         if (mHolder != null) {
             mCameraDevice.setPreviewDisplayAndStartPreview(mHolder);
         }
+
+        if (mOnAtActivityStart) {
+            Log.v(TAG, "Turning flashlight on at activity start...");
+            // TODO
+        }
+    }
+
+    private void loadPreferences() {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        mOnAtActivityStart = pref.getBoolean("onstart", false);
+        Log.v(TAG, "Turn flashlight on at activity start? " + mOnAtActivityStart);
     }
 
     @Override
@@ -132,14 +152,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
     }
 
-    /*@Override
-    protected void onResume() {
-        // the foreground lifetime starts here (called often)
-        super.onResume();
-        Log.v(TAG, "onResume");
-        //mCameraDevice.startPreview();
-    }*/
-
     @Override
     protected void onStop() {
         // the visible timeline ends here
@@ -151,15 +163,6 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         // it might need the preview to toggle the torch OFF cleanly
         mCameraDevice.releaseCamera();
     }
-
-    /*@Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        // as per the manifest configuration, this will be called on
-        // orientation change or the virtual keyboard being hidden,
-        // which should not even happen at all, due to the activity's
-        // orientation being set to 'portrait' mode in the manifest
-        super.onConfigurationChanged(newConfig);
-    }*/
 
     /* *** END MAIN ACTIVITY'S LIFE CYCLE CALLBACK *** */
 
@@ -227,6 +230,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 Log.v(TAG, "Settings selected");
+                startActivity(new Intent(this, GalaxyTorchSettings.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
