@@ -136,7 +136,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         if (mOnAtActivityStart) {
             Log.v(TAG, "Turning flashlight on at activity start...");
-            new TorchToggleTask().execute();
+            new TorchToggleTask().execute(true);
         }
     }
 
@@ -156,11 +156,14 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
      * before the SurfaceHolder's. This means that when it comes time to toggle
      * the camera's LED within onStart(), the surface won't be ready. Putting
      * locks around the surface holder won't work without moving the one task in
-     * a separate thread. Hence, this AsyncTask definition.
+     * a separate thread. Hence, this AsyncTask definition. When calling
+     * execute() on this task, you can either provide zero or one Boolean
+     * argument. The former will toggle the flashlight to the opposite state,
+     * while the latter asserts a specific state to toggle into.
      * 
      * @author santa
      */
-    private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
+    private class TorchToggleTask extends AsyncTask<Boolean, Void, Boolean> {
 
         // XXX: This is almost identical to its implementation in
         // GalaxyTorchService. Might want to refactor to consolidate.
@@ -182,8 +185,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Boolean... params) {
             Log.v(TAG, "doInBackground");
+
             if (mHolder == null) {
                 Log.i(TAG, "Waiting for surface holder to be created...");
                 mSurfaceLock.lock();
@@ -198,8 +202,24 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                     mSurfaceLock.unlock();
                 }
             }
+
+            // collect parameter
+            boolean toggle = !mWasTorchOn;
+            assert (params.length <= 1);
+            if (params.length > 1) {
+                Log.wtf(TAG, "Invalid parameters length");
+                return false;
+            } else if (params.length == 1) {
+                toggle = params[0];
+                // sanity check
+                if (!(toggle ^ mWasTorchOn)) {
+                    Log.wtf(TAG, "Toggling the same state: " + (toggle ? "on" : "off"));
+                    return false;
+                }
+            }
+
             // actually toggle the LED (in torch mode)
-            return mCameraDevice.toggleCameraLED(!mWasTorchOn);
+            return mCameraDevice.toggleCameraLED(toggle);
         }
 
         @Override
