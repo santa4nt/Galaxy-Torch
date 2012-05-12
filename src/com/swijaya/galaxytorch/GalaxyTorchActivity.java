@@ -26,6 +26,7 @@ package com.swijaya.galaxytorch;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -134,24 +135,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         }
 
         if (mOnAtActivityStart) {
-            if (mHolder == null) {
-                // wait for the surface holder to be created
-                Log.v(TAG, "Waiting for surface holder to be created...");
-                mSurfaceLock.lock();
-                try {
-                    while (mHolder == null) {
-                        mSurfaceHolderIsSet.await();
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
-                    return;
-                } finally {
-                    mSurfaceLock.unlock();
-                }
-            }
-
             Log.v(TAG, "Turning flashlight on at activity start...");
-            toggle(true);
+            new TorchToggleTask().execute();
         }
     }
 
@@ -160,6 +145,88 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         mOnAtActivityStart = pref.getBoolean("onstart", false);
         Log.v(TAG, "Turn flashlight on at activity start? " + mOnAtActivityStart);
+    }
+
+    /**
+     * A background task worker to toggle the torch on. We have to resort to
+     * using AsyncTask because onCreate() -> onStart() and
+     * SurfaceHolder.Callback for the creation of the preview surface defined in
+     * the former are all done within a single thread. As it happens, the
+     * service's two life cycle callbacks are most likely to be called first
+     * before the SurfaceHolder's. This means that when it comes time to toggle
+     * the camera's LED within onStart(), the surface won't be ready. Putting
+     * locks around the surface holder won't work without moving the one task in
+     * a separate thread. Hence, this AsyncTask definition.
+     * 
+     * @author santa
+     */
+    private class TorchToggleTask extends AsyncTask<Void, Void, Boolean> {
+
+        // XXX: This is almost identical to its implementation in
+        // GalaxyTorchService. Might want to refactor to consolidate.
+
+        private boolean mWasTorchOn;
+
+        @Override
+        protected void onPreExecute() {
+            Log.v(TAG, "onPreExecute");
+            mWasTorchOn = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state: " + (mWasTorchOn ? "on" : "off"));
+
+            if (mWasTorchOn ^ mToggleButton.isSelected()) {
+                assert (false);
+                Log.wtf(TAG, "Button state does not match device state!");
+            }
+
+            mToggleButton.setEnabled(false);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Log.v(TAG, "doInBackground");
+            if (mHolder == null) {
+                Log.i(TAG, "Waiting for surface holder to be created...");
+                mSurfaceLock.lock();
+                try {
+                    while (mHolder == null) {
+                        mSurfaceHolderIsSet.await();
+                    }
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "InterruptedException: " + e.getLocalizedMessage());
+                    return false;
+                } finally {
+                    mSurfaceLock.unlock();
+                }
+            }
+            // actually toggle the LED (in torch mode)
+            return mCameraDevice.toggleCameraLED(!mWasTorchOn);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            Log.v(TAG, "onPostExecute: " + result.toString());
+            if (!result) {
+                Log.e(TAG, "Cannot toggle camera LED");
+            }
+
+            // sanity check
+            boolean isTorchOn = mCameraDevice.isFlashlightOn();
+            Log.v(TAG, "Current torch state should be " + (mWasTorchOn ? "off" : "on")
+                    + " and it is " + (isTorchOn ? "on" : "off"));
+            assert (isTorchOn == !mWasTorchOn);
+            if (isTorchOn == mWasTorchOn) {
+                Log.e(TAG, "Current torch state after toggle did not change");
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        R.string.err_cannot_toggle,
+                        Toast.LENGTH_LONG);
+                toast.show();
+                // TODO: maybe try another strategy?
+            }
+
+            mToggleButton.setSelected(isTorchOn);
+            mToggleButton.setEnabled(true);
+        }
+
     }
 
     @Override
@@ -193,47 +260,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     /* *** END MAIN ACTIVITY'S LIFE CYCLE CALLBACK *** */
 
     public void onClick(View v) {
-        boolean isTorchOn = mCameraDevice.isFlashlightOn();
-        toggle(!isTorchOn);
-    }
-
-    private void toggle(boolean on) {
-        mToggleButton.setEnabled(false);
-        try {
-            boolean isTorchOn = mCameraDevice.isFlashlightOn();
-            Log.v(TAG, "Current torch state: " + (isTorchOn ? "on" : "off"));
-            if (on == isTorchOn) {
-                assert (false);
-                Log.wtf(TAG, "Current state is the same!");
-                return;
-            }
-
-            if (isTorchOn ^ mToggleButton.isSelected()) {
-                assert (false);
-                Log.wtf(TAG, "Button state does not match device state!");
-            }
-
-            // actually toggle
-            if (!mCameraDevice.toggleCameraLED(on)) {
-                Log.e(TAG, "Cannot toggle camera LED");
-            }
-
-            // sanity check
-            boolean isTorchOnAfter = mCameraDevice.isFlashlightOn();
-            Log.v(TAG, "Current torch state should be " + (on ? "on" : "off")
-                    + " and it is " + (isTorchOnAfter ? "on" : "off"));
-            assert (on == isTorchOnAfter);
-            if (on != isTorchOnAfter) {
-                Log.e(TAG, "Current torch state after toggle did not change");
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        R.string.err_cannot_toggle, Toast.LENGTH_SHORT);
-                toast.show();
-                // TODO: maybe try another strategy?
-            }
-            mToggleButton.setSelected(isTorchOnAfter);
-        } finally {
-            mToggleButton.setEnabled(true);
-        }
+        Log.v(TAG, "onClick");
+        new TorchToggleTask().execute();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
