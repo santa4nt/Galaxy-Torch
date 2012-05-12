@@ -47,7 +47,7 @@ com.swijaya.galaxytorch.GalaxyTorchActivity$TorchToggleTask -> com.swijaya.galax
     com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> a
     boolean $assertionsDisabled -> b
     void onPreExecute() -> onPreExecute
-    java.lang.Boolean doInBackground$5f8445a4() -> a
+    java.lang.Boolean doInBackground(java.lang.Boolean[]) -> a
     void onPostExecute(java.lang.Object) -> onPostExecute
     java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
 com.swijaya.galaxytorch.GalaxyTorchService -> com.swijaya.galaxytorch.GalaxyTorchService:
