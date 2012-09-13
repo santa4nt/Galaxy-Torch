@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,6 +61,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     // variables to hold preference values
     private boolean mOnAtActivityStart; // whether we turn on the flashlight at activity start
     private boolean mDimScreen;			// whether we dim the screen when the flashlight is on
+    private boolean mUseVolumeRocker;	// whether we use the volume rocker key event as flashlight toggle
 
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
@@ -149,6 +151,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "Turn flashlight on at activity start? " + mOnAtActivityStart);
         mDimScreen = pref.getBoolean("dimscreen", true);
         Log.v(TAG, "Dim the screen when the flashlight is on? " + mDimScreen);
+        mUseVolumeRocker = pref.getBoolean("userocker", false);
+        Log.v(TAG, "Use volume rocker as flashlight toggle? " + mUseVolumeRocker);
     }
 
     /**
@@ -353,5 +357,26 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 return super.onOptionsItemSelected(item);
         }
     }
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if (!mUseVolumeRocker)
+			return super.dispatchKeyEvent(event);
+		
+		int action = event.getAction();
+		int keyCode = event.getKeyCode();
+		
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_VOLUME_UP:
+		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			if (action == KeyEvent.ACTION_UP) {
+				Log.v(TAG, "Handling volume rocker key event.");
+				new TorchToggleTask().execute();
+			}
+			return true;
+		default:
+			return super.dispatchKeyEvent(event);
+		}
+	}
 
 }

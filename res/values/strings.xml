@@ -12,5 +12,7 @@
     <string name="pref_autotoggle_summary">Toggle flashlight on at launch</string>
     <string name="pref_dim_title">Dim Screen</string>
     <string name="pref_dim_summary">Dim the screen when flashlight is turned on</string>
+    <string name="pref_userocker_title">Use Volume Rocker</string>
+    <string name="pref_userocker_summary">Use the volume rocker to toggle flashlight</string>
 
 </resources>

@@ -12,4 +12,9 @@
         android:key="dimscreen"
         android:defaultValue="true" />
     
+    <CheckBoxPreference android:title="@string/pref_userocker_title"
+        android:summary="@string/pref_userocker_summary"
+        android:key="userocker"
+        android:defaultValue="false" />
+    
 </PreferenceScreen>
