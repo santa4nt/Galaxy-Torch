@@ -97,6 +97,9 @@ public class GalaxyTorchService extends Service {
             PendingIntent pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
             widgetViews.setOnClickPendingIntent(R.id.widgetbutton, pendingIntent);
             break;
+        default:
+        	// FOCUS; do nothing
+        	break;
         }
 
         return widgetViews;
