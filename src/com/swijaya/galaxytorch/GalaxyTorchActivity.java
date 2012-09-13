@@ -47,7 +47,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class GalaxyTorchActivity extends Activity implements View.OnClickListener,
         SurfaceHolder.Callback {
 
-    private final String TAG = GalaxyTorchActivity.class.getSimpleName();
+    private static final String TAG = GalaxyTorchActivity.class.getSimpleName();
+    private static final float DIM_VALUE = 0.01f;
 
     private SurfaceView mCameraPreview; // should be hidden
     private ImageButton mToggleButton;
@@ -56,8 +57,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                                         // the camera
     private SurfaceHolder mHolder; // the currently ACTIVE SurfaceHolder
 
-    private boolean mOnAtActivityStart; // a preference setting whether we turn
-                                        // on the flashlight at activity start
+    // variables to hold preference values
+    private boolean mOnAtActivityStart; // whether we turn on the flashlight at activity start
+    private boolean mDimScreen;			// whether we dim the screen when the flashlight is on
 
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
@@ -145,6 +147,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         mOnAtActivityStart = pref.getBoolean("onstart", false);
         Log.v(TAG, "Turn flashlight on at activity start? " + mOnAtActivityStart);
+        mDimScreen = pref.getBoolean("dimscreen", true);
+        Log.v(TAG, "Dim the screen when the flashlight is on? " + mDimScreen);
     }
 
     /**
@@ -245,6 +249,23 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
             mToggleButton.setSelected(isTorchOn);
             mToggleButton.setEnabled(true);
+            
+            if (!mDimScreen)
+            	return;
+            
+            // adjust brightness if the flashlight is ON
+            float brightness;
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            if (isTorchOn) {
+            	// this will lock the screen!
+            	//brightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
+            	brightness = DIM_VALUE;
+            } else {
+            	brightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+            }
+            Log.v(TAG, "Setting screen brightness to " + brightness);
+            lp.screenBrightness = brightness;
+            getWindow().setAttributes(lp);
         }
 
     }
@@ -262,6 +283,13 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 return;
             }
             mToggleButton.setSelected(false);
+            
+            if (mDimScreen) {
+            	WindowManager.LayoutParams lp = getWindow().getAttributes();
+            	Log.v(TAG, "Setting screen brightness to " + WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+            	lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+            	getWindow().setAttributes(lp);
+            }
         }
     }
 

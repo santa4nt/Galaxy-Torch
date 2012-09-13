@@ -10,5 +10,7 @@
     <string name="menu_settings">Settings</string>
     <string name="pref_autotoggle_title">Auto Toggle</string>
     <string name="pref_autotoggle_summary">Toggle flashlight on at launch</string>
+    <string name="pref_dim_title">Dim Screen</string>
+    <string name="pref_dim_summary">Dim the screen when flashlight is turned on</string>
 
 </resources>

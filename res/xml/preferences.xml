@@ -7,4 +7,9 @@
         android:key="onstart"
         android:defaultValue="false" />
     
+    <CheckBoxPreference android:title="@string/pref_dim_title"
+        android:summary="@string/pref_dim_summary"
+        android:key="dimscreen"
+        android:defaultValue="true" />
+    
 </PreferenceScreen>
