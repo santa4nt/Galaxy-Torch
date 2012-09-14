@@ -23,8 +23,10 @@ com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTor
     com.swijaya.galaxytorch.CameraDevice mCameraDevice -> d
     android.view.SurfaceHolder mHolder -> e
     boolean mOnAtActivityStart -> f
-    java.util.concurrent.locks.Lock mSurfaceLock -> g
-    java.util.concurrent.locks.Condition mSurfaceHolderIsSet -> h
+    boolean mDimScreen -> g
+    boolean mUseVolumeRocker -> h
+    java.util.concurrent.locks.Lock mSurfaceLock -> i
+    java.util.concurrent.locks.Condition mSurfaceHolderIsSet -> j
     void onCreate(android.os.Bundle) -> onCreate
     void onDestroy() -> onDestroy
     void onStart() -> onStart
@@ -36,12 +38,14 @@ com.swijaya.galaxytorch.GalaxyTorchActivity -> com.swijaya.galaxytorch.GalaxyTor
     void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
     boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
     boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
-    java.lang.String access$0(com.swijaya.galaxytorch.GalaxyTorchActivity) -> a
-    com.swijaya.galaxytorch.CameraDevice access$1(com.swijaya.galaxytorch.GalaxyTorchActivity) -> b
-    android.widget.ImageButton access$2(com.swijaya.galaxytorch.GalaxyTorchActivity) -> c
-    android.view.SurfaceHolder access$3(com.swijaya.galaxytorch.GalaxyTorchActivity) -> d
-    java.util.concurrent.locks.Lock access$4(com.swijaya.galaxytorch.GalaxyTorchActivity) -> e
-    java.util.concurrent.locks.Condition access$5(com.swijaya.galaxytorch.GalaxyTorchActivity) -> f
+    boolean dispatchKeyEvent(android.view.KeyEvent) -> dispatchKeyEvent
+    java.lang.String access$0() -> a
+    com.swijaya.galaxytorch.CameraDevice access$1(com.swijaya.galaxytorch.GalaxyTorchActivity) -> a
+    android.widget.ImageButton access$2(com.swijaya.galaxytorch.GalaxyTorchActivity) -> b
+    android.view.SurfaceHolder access$3(com.swijaya.galaxytorch.GalaxyTorchActivity) -> c
+    java.util.concurrent.locks.Lock access$4(com.swijaya.galaxytorch.GalaxyTorchActivity) -> d
+    java.util.concurrent.locks.Condition access$5(com.swijaya.galaxytorch.GalaxyTorchActivity) -> e
+    boolean access$6(com.swijaya.galaxytorch.GalaxyTorchActivity) -> f
 com.swijaya.galaxytorch.GalaxyTorchActivity$TorchToggleTask -> com.swijaya.galaxytorch.d:
     boolean mWasTorchOn -> c
     com.swijaya.galaxytorch.GalaxyTorchActivity this$0 -> a
