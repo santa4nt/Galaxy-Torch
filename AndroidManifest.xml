@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2012 Santoso Wijaya
+<!-- Copyright (c) 2013 Santoso Wijaya
 
      Permission is hereby granted, free of charge, to any person obtaining
      a copy of this software and associated documentation files (the
@@ -22,11 +22,11 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swijaya.galaxytorch"
-    android:versionCode="16"
-    android:versionName="1.3"
+    android:versionCode="17"
+    android:versionName="1.3.1"
     android:installLocation="auto">
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="14"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
     
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
