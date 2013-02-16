@@ -59,9 +59,10 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     private SurfaceHolder mHolder; // the currently ACTIVE SurfaceHolder
 
     // variables to hold preference values
-    private boolean mOnAtActivityStart; // whether we turn on the flashlight at activity start
+    private boolean mOnAtActivityStart; 	// whether we turn on the flashlight at activity start
     private boolean mDimScreen;			// whether we dim the screen when the flashlight is on
-    private boolean mUseVolumeRocker;	// whether we use the volume rocker key event as flashlight toggle
+    private boolean mUseVolumeRocker;		// whether we use the volume rocker key event as flashlight toggle
+    private boolean mUseBritishSwitch;	// whether we use the "British switch" modality for our button's sprite
 
     private final Lock mSurfaceLock = new ReentrantLock();
     private final Condition mSurfaceHolderIsSet = mSurfaceLock.newCondition();
@@ -76,8 +77,9 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.main);
 
         mToggleButton = (ImageButton) findViewById(R.id.pressbutton);
+        mToggleButton.setImageResource(mUseBritishSwitch ? R.drawable.switch_button_british : R.drawable.switch_button);
+        
         mToggleButton.setOnClickListener(this);
-
         mToggleButton.setEnabled(false);
 
         mCameraDevice = new CameraDevice();
@@ -118,9 +120,11 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "onStart");
 
         loadPreferences();
+        
+        // user might have changed the button's sprite modality
+        mToggleButton.setImageResource(mUseBritishSwitch ? R.drawable.switch_button_british : R.drawable.switch_button);
 
-        // when we get there from onPause(), the camera would have been released
-        // and
+        // when we get there from onPause(), the camera would have been released and
         // now re-acquired, but that means the camera has now no surface holder
         // to flush to! so remember the state of the surface holder, and reset
         // it immediately after re-acquiring
@@ -153,6 +157,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "Dim the screen when the flashlight is on? " + mDimScreen);
         mUseVolumeRocker = pref.getBoolean("userocker", false);
         Log.v(TAG, "Use volume rocker as flashlight toggle? " + mUseVolumeRocker);
+        mUseBritishSwitch = pref.getBoolean("usebritswitch", false);
+        Log.v(TAG, "Use \"British switch\" modality for button sprite? " + mUseBritishSwitch);
     }
 
     /**

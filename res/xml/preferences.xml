@@ -17,4 +17,9 @@
         android:key="userocker"
         android:defaultValue="false" />
     
+    <CheckBoxPreference android:title="@string/pref_british_switch_title"
+        android:summary="@string/pref_british_switch_summary"
+        android:key="usebritswitch"
+        android:defaultValue="false" />
+    
 </PreferenceScreen>
