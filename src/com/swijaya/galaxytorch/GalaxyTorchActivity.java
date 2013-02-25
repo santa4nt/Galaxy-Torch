@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Santoso Wijaya
+ * Copyright (c) 2013 Santoso Wijaya
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -70,7 +70,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
     /* *** BEGIN MAIN ACTIVITY'S LIFE CYCLE CALLBACKS *** */
 
     /** Called when the activity is first created. */
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

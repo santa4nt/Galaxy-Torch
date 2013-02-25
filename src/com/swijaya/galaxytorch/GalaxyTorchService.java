@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 Santoso Wijaya
+ * Copyright (c) 2013 Santoso Wijaya
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -153,7 +153,8 @@ public class GalaxyTorchService extends Service {
 
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate() {
         super.onCreate();
         Log.v(TAG, "onCreate: service starting");
@@ -323,7 +324,8 @@ public class GalaxyTorchService extends Service {
      * the camera device's resources and setting its flashlight LED's torch
      * mode on.
      */
-    private Notification createToggleNotification() {
+    @SuppressWarnings("deprecation")
+	private Notification createToggleNotification() {
         int icon = R.drawable.lightbulb_notify;
         CharSequence tickerText = getText(R.string.notify_toggle_on);
         long when = System.currentTimeMillis();
@@ -334,7 +336,7 @@ public class GalaxyTorchService extends Service {
         Intent notificationIntent = new Intent(this, GalaxyTorchService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, notificationIntent, 0);
 
-        Notification notification = new Notification(icon, tickerText, when);
+		Notification notification = new Notification(icon, tickerText, when);
         notification.setLatestEventInfo(context, contentTitle, contentText, pendingIntent);
 
         return notification;
