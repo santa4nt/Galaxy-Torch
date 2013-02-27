@@ -23,7 +23,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swijaya.galaxytorch"
     android:versionCode="18"
-    android:versionName="1.3.2"
+    android:versionName="1.3.3"
     android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
