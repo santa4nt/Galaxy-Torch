@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Italian localization provided by:
+
+     Federico Cappelletti (fedec96@gmail.com)
+-->
+<resources>
+
+    <string name="app_name">Galaxy Torch</string>
+    <string name="pressme">Premimi!</string>
+    <string name="err_cannot_acquire">Impossibile acquisire le risorse della fotocamera!</string>
+    <string name="err_cannot_toggle">Impossibile accendere il LED!</string>
+    <string name="notify_toggle_on">Torcia LED accesa</string>
+    <string name="notify_toggle_on_ext">Tocca per spegnere.</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="pref_autotoggle_title">Avvio automatico</string>
+    <string name="pref_autotoggle_summary">Avvia la torcia al lancio</string>
+    <string name="pref_dim_title">Riduci luminosità</string>
+    <string name="pref_dim_summary">Riduci la luminosità quando la torcia è accesa</string>
+    <string name="pref_userocker_title">Usa i tasti volume</string>
+    <string name="pref_userocker_summary">Usa i tasti del volume per controllare la torcia</string>
+    <string name="pref_british_switch_title">Inverti interruttore</string>
+    <string name="pref_british_switch_summary">Inverti il funzionamento del pulsante</string>
+
+</resources>

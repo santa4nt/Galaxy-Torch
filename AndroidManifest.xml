@@ -22,8 +22,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swijaya.galaxytorch"
-    android:versionCode="19"
-    android:versionName="1.3.3"
+    android:versionCode="20"
+    android:versionName="1.3.4"
     android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
