@@ -4,3 +4,8 @@
 .DS_Store
 local.properties
 secure.properties
+
+# user-specific IDEA settings
+.idea/workspace.xml
+.idea/tasks.xml
+
