@@ -3,6 +3,8 @@
     android:minWidth="40dp"
     android:minHeight="40dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget" >
+    android:initialLayout="@layout/widget"
+    android:widgetCategory="home_screen|keyguard"
+    android:initialKeyguardLayout="@layout/widget" >    <!-- TODO: This should have its own layout -->
 
 </appwidget-provider>
