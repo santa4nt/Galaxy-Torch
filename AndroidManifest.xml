@@ -22,8 +22,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swijaya.galaxytorch"
-    android:versionCode="20"
-    android:versionName="1.3.4"
+    android:versionCode="21"
+    android:versionName="1.4"
     android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
@@ -61,7 +61,8 @@
             <meta-data android:name="android.appwidget.provider" 
                        android:resource="@xml/torch_widget_info" />
         </receiver>
-        <service android:name=".GalaxyTorchService">
+        <service android:name=".GalaxyTorchService"
+            android:exported="true" >
             <!-- since (currently) we are only consuming this service locally, ignore
             <intent-filter>
                 <action android:name="com.swijaya.galaxytorch.toggle_action" />

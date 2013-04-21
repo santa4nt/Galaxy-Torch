@@ -106,4 +106,6 @@ com.swijaya.galaxytorch.GalaxyTorchSettings -> com.swijaya.galaxytorch.GalaxyTor
     void onCreate(android.os.Bundle) -> onCreate
 com.swijaya.galaxytorch.GalaxyTorchWidgetProvider -> com.swijaya.galaxytorch.GalaxyTorchWidgetProvider:
     java.lang.String TAG -> a
+    java.lang.Boolean KEYGUARD_SUPPORTED -> b
+    boolean isKeyguardWidget(android.appwidget.AppWidgetManager,int) -> a
     void onUpdate(android.content.Context,android.appwidget.AppWidgetManager,int[]) -> onUpdate
