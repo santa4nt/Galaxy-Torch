@@ -68,7 +68,7 @@ public class GalaxyTorchWidgetProvider extends AppWidgetProvider {
                 Log.v(TAG, "Keyguard widget update");
                 // TODO
             }
-            else {
+            //else {    // for now, make keyguard (lock screen) widget works like regular home screen widget
                 // create an intent to launch the service that activates the overlay and turns on the torch
                 Intent intent = new Intent(context, GalaxyTorchService.class);
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
@@ -81,7 +81,7 @@ public class GalaxyTorchWidgetProvider extends AppWidgetProvider {
 
                 // tell the manager to perform an update for the current widget
                 appWidgetManager.updateAppWidget(id, views);
-            }
+            //}
         }
     }
 
