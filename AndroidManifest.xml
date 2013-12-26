@@ -56,8 +56,7 @@
         </activity>
         <activity
             android:name=".BitcoinDonateActivity"
-            android:label="@string/pref_donate_bitcoin"
-            android:theme="@style/settings_theme" >
+            android:label="@string/pref_donate_bitcoin">
         </activity>
         <receiver android:name=".GalaxyTorchWidgetProvider">
             <intent-filter>
