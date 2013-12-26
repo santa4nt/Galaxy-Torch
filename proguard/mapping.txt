@@ -1,3 +1,7 @@
+com.swijaya.galaxytorch.BitcoinDonateActivity -> com.swijaya.galaxytorch.BitcoinDonateActivity:
+    java.lang.String TAG -> a
+    void onCreate(android.os.Bundle) -> onCreate
+    void onClick(android.view.View) -> onClick
 com.swijaya.galaxytorch.CameraDevice -> com.swijaya.galaxytorch.a:
     java.lang.String TAG -> b
     android.hardware.Camera mCamera -> c
