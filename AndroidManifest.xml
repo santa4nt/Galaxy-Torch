@@ -22,8 +22,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.swijaya.galaxytorch"
-    android:versionCode="23"
-    android:versionName="1.5"
+    android:versionCode="24"
+    android:versionName="1.5.1"
     android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19"/>

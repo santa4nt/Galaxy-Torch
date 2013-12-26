@@ -5,7 +5,7 @@
 -->
 <resources>
 
-    <string name="app_name">Galaxy Torch</string>
+    <string name="app_name">A Torch</string>
     <string name="pressme">Premimi!</string>
     <string name="err_cannot_acquire">Impossibile acquisire le risorse della fotocamera!</string>
     <string name="err_cannot_toggle">Impossibile accendere il LED!</string>
