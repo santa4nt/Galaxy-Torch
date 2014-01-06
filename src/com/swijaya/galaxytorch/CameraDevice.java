@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import android.hardware.Camera;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -45,6 +46,29 @@ public class CameraDevice {
     private boolean mIsFlashlightOn;
     private boolean mIsPreviewStarted;
 
+    private Handler mHandler = new Handler();
+    private boolean mStateOn;   // only used for strobing effect
+    private final Runnable mStrober = new Runnable() {
+        @Override
+        public void run() {
+            if (mIsFlashlightOn) {
+                if (mStateOn) {
+                    // turn state on
+                    mTorch.toggleTorch(mCamera, true);
+                    mStateOn = false;
+                    mHandler.postDelayed(this, 20);
+                } else {
+                    // turn state off
+                    mTorch.toggleTorch(mCamera, false);
+                    mStateOn = true;
+                    mHandler.postDelayed(this, 100);
+                }
+            } else {
+                mTorch.toggleTorch(mCamera, false);
+            }
+        }
+    };
+
     public boolean isFlashlightOn() {
         return mIsFlashlightOn;
     }
@@ -53,9 +77,11 @@ public class CameraDevice {
         mIsFlashlightOn = on;
     }
 
+    /* not currently used
     protected Camera getCamera() {
         return mCamera;
     }
+    */
 
     /**
      * Acquire the default camera object (it should support a flashlight).
@@ -187,7 +213,11 @@ public class CameraDevice {
         } else {
             Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED in strobing mode...");
             // strobing mode: must spawn and track a separate thread to do the strobing
-            // TODO
+            postFlashlightState(on);
+            if (on) {
+                mHandler.post(mStrober);
+            }
+            success = true;
         }
 
         return success;

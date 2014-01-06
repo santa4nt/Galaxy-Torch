@@ -40,7 +40,7 @@ public class DefaultTorch implements CameraDevice.Torch {
     }
 
     private void setFlashMode(Camera camera, String mode) {
-        Log.v(TAG, "Setting flash mode: " + mode);
+        //Log.v(TAG, "Setting flash mode: " + mode);
         Camera.Parameters params = camera.getParameters();
         params.setFlashMode(mode);
         camera.setParameters(params);
