@@ -22,10 +22,12 @@
         android:key="usebritswitch"
         android:defaultValue="false" />
 
+    <!-- XXX: Activate again later, with more UX-friendly methods
     <Preference android:title="@string/pref_donate_bitcoin" >
         <intent android:action="android.intent.action.VIEW"
                 android:targetPackage="com.swijaya.galaxytorch"
                 android:targetClass="com.swijaya.galaxytorch.BitcoinDonateActivity" />
     </Preference>
+    -->
 
 </PreferenceScreen>
