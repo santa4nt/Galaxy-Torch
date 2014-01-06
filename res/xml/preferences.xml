@@ -16,7 +16,12 @@
         android:summary="@string/pref_userocker_summary"
         android:key="userocker"
         android:defaultValue="false" />
-    
+
+    <CheckBoxPreference android:title="@string/pref_strobe_title"
+                        android:summary="@string/pref_strobe_summary"
+                        android:key="strobe"
+                        android:defaultValue="false" />
+
     <CheckBoxPreference android:title="@string/pref_british_switch_title"
         android:summary="@string/pref_british_switch_summary"
         android:key="usebritswitch"

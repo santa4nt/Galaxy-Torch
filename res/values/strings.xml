@@ -35,8 +35,11 @@
     <string name="pref_dim_summary">Dim the screen when flashlight is turned on</string>
     <string name="pref_userocker_title">Use Volume Rocker</string>
     <string name="pref_userocker_summary">Use the volume rocker to toggle flashlight</string>
+    <string name="pref_strobe_title">Strobe</string>
+    <string name="pref_strobe_summary">Switch toggles flashlight in strobe mode</string>
     <string name="pref_british_switch_title">Reverse switch</string>
     <string name="pref_british_switch_summary">Reverse the button\'s sprite modality</string>
+
     <string name="pref_donate_bitcoin">Donate with Bitcoin!</string>
     <string name="button_copy_address">Copy address</string>
     <string name="toast_address_copied">Address copied to clipboard</string>

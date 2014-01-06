@@ -56,12 +56,13 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     private CameraDevice mCameraDevice; // helper object to acquire and control
                                         // the camera
-    private SurfaceHolder mHolder; // the currently ACTIVE SurfaceHolder
+    private SurfaceHolder mHolder;      // the currently ACTIVE SurfaceHolder
 
     // variables to hold preference values
-    private boolean mOnAtActivityStart; 	// whether we turn on the flashlight at activity start
+    private boolean mOnAtActivityStart; // whether we turn on the flashlight at activity start
     private boolean mDimScreen;			// whether we dim the screen when the flashlight is on
-    private boolean mUseVolumeRocker;		// whether we use the volume rocker key event as flashlight toggle
+    private boolean mUseVolumeRocker;   // whether we use the volume rocker key event as flashlight toggle
+    private boolean mStrobe;            // whether the switch toggles strobe flashlight
     private boolean mUseBritishSwitch;	// whether we use the "British switch" modality for our button's sprite
 
     private final Lock mSurfaceLock = new ReentrantLock();
@@ -168,6 +169,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "Dim the screen when the flashlight is on? " + mDimScreen);
         mUseVolumeRocker = pref.getBoolean("userocker", false);
         Log.v(TAG, "Use volume rocker as flashlight toggle? " + mUseVolumeRocker);
+        mStrobe = pref.getBoolean("strobe", false);
+        Log.v(TAG, "Switch toggles strobe mode? " + mStrobe);
         mUseBritishSwitch = pref.getBoolean("usebritswitch", false);
         Log.v(TAG, "Use \"British switch\" modality for button sprite? " + mUseBritishSwitch);
     }
@@ -339,8 +342,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void onClick(View v) {
         Log.v(TAG, "onClick");
-        //new TorchToggleTask().execute();
-        new TorchToggleTask().execute(true);
+        new TorchToggleTask().execute(mStrobe);
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
