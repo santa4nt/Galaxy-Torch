@@ -176,7 +176,7 @@ public class GalaxyTorchService extends Service {
 
         if (mCameraDevice.isFlashlightOn()) {
             Log.w(TAG, "Flashlight still on");
-            if (!mCameraDevice.toggleCameraLED(false)) {
+            if (!mCameraDevice.toggleCameraLED(false, false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
             }
         }
@@ -247,7 +247,7 @@ public class GalaxyTorchService extends Service {
             }
 
             // actually toggle the LED (in torch mode)
-            return mCameraDevice.toggleCameraLED(!mWasTorchOn);
+            return mCameraDevice.toggleCameraLED(!mWasTorchOn, false);
         }
 
         @Override
