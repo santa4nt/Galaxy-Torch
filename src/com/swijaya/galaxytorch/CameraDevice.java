@@ -62,7 +62,6 @@ public class CameraDevice {
      * Subclasses can override this method for a more specialized usage of
      * its camera hardware, if necessary.
      * 
-     * @param context the activity that invoked this method
      * @return whether the method was successful
      */
     public boolean acquireCamera() {
@@ -151,14 +150,15 @@ public class CameraDevice {
     }
 
     /**
-     * Toggle the camera device's flashlight LED in a continuous manner.
+     * Toggle the camera device's flashlight LED in a continuous or strobing manner.
      * Pre-condition: the camera device, and its associated resources, has
      *                been acquired and set up
      * 
      * @param on whether to toggle the flashlight LED on (true) or off (false)
+     * @param strobe whether to strobe the flashlight LED or not
      * @return operation success
      */
-    public boolean toggleCameraLED(boolean on) {
+    public boolean toggleCameraLED(boolean on, boolean strobe) {
         assert (mCamera != null);
         if (mCamera == null) {
             Log.wtf(TAG, "toggling with NULL camera!");
@@ -177,10 +177,17 @@ public class CameraDevice {
         mTorch = new DefaultTorch();
 
         boolean success = false;
-        Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
-        success = mTorch.toggleTorch(mCamera, on);
-        if (success) {
-            postFlashlightState(on);
+
+        if (!strobe) {
+            Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED...");
+            success = mTorch.toggleTorch(mCamera, on);
+            if (success) {
+                postFlashlightState(on);
+            }
+        } else {
+            Log.v(TAG, "Turning " + (on ? "on" : "off") + " camera LED in strobing mode...");
+            // strobing mode: must spawn and track a separate thread to do the strobing
+            // TODO
         }
 
         return success;

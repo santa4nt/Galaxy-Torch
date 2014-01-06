@@ -85,9 +85,19 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         mCameraDevice = new CameraDevice();
         mCameraPreview = (SurfaceView) findViewById(R.id.camerapreview);
+
         // install a callback so we get notified when the underlying
         // surface is created and destroyed.
         SurfaceHolder holder = mCameraPreview.getHolder();
+        if (holder == null) {
+            // bail fast
+            Log.e(TAG, "Cannot obtain surface holder. Closing activity.");
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.err_cannot_acquire, Toast.LENGTH_SHORT);
+            toast.show();
+            finish();
+        }
+
         holder.addCallback(this);
         // deprecated
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -105,7 +115,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
         Log.v(TAG, "onDestroy");
 
         if (mCameraDevice.isFlashlightOn()) {
-            if (!mCameraDevice.toggleCameraLED(false)) {
+            if (!mCameraDevice.toggleCameraLED(false, false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
             }
         }
@@ -145,7 +155,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         if (mOnAtActivityStart) {
             Log.v(TAG, "Turning flashlight on at activity start...");
-            new TorchToggleTask().execute(true);
+            new TorchToggleTask().execute(false, true);
         }
     }
 
@@ -218,23 +228,32 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
                 }
             }
 
-            // collect parameter
+            // collect parameters
             boolean toggle = !mWasTorchOn;
-            assert (params.length <= 1);
-            if (params.length > 1) {
+            boolean strobe = false;
+            assert (params.length <= 2);
+            if (params.length > 2) {
                 Log.wtf(TAG, "Invalid parameters length");
                 return false;
-            } else if (params.length == 1) {
-                toggle = params[0];
-                // sanity check
-                if (!(toggle ^ mWasTorchOn)) {
-                    Log.wtf(TAG, "Toggling the same state: " + (toggle ? "on" : "off"));
-                    return false;
+            } else {
+                // the first parameter (if any) is strobing mode
+                if (params.length >= 1) {
+                    strobe = params[0];
+                }
+
+                // the second parameter is the toggle state requested
+                if (params.length == 2) {
+                    toggle = params[1];
+                    // sanity check
+                    if (!(toggle ^ mWasTorchOn)) {
+                        Log.wtf(TAG, "Toggling the same state: " + (toggle ? "on" : "off"));
+                        return false;
+                    }
                 }
             }
 
             // actually toggle the LED (in torch mode)
-            return mCameraDevice.toggleCameraLED(toggle);
+            return mCameraDevice.toggleCameraLED(toggle, strobe);
         }
 
         @Override
@@ -289,7 +308,7 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
         // turn off the torch if it is on
         if (mCameraDevice.isFlashlightOn()) {
-            if (!mCameraDevice.toggleCameraLED(false)) {
+            if (!mCameraDevice.toggleCameraLED(false, false)) {
                 Log.e(TAG, "Cannot toggle camera LED");
                 return;
             }
@@ -320,7 +339,8 @@ public class GalaxyTorchActivity extends Activity implements View.OnClickListene
 
     public void onClick(View v) {
         Log.v(TAG, "onClick");
-        new TorchToggleTask().execute();
+        //new TorchToggleTask().execute();
+        new TorchToggleTask().execute(true);
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
