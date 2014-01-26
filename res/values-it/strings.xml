@@ -5,20 +5,27 @@
 -->
 <resources>
 
-    <string name="app_name">A Torch</string>
-    <string name="pressme">Premimi!</string>
-    <string name="err_cannot_acquire">Impossibile acquisire le risorse della fotocamera!</string>
-    <string name="err_cannot_toggle">Impossibile accendere il LED!</string>
+    <string name="app_name">Torcia</string>
+    <string name="pressme">Toccami!</string>
+    <string name="err_cannot_acquire">Impossibile accedere alla fotocamera!</string>
+    <string name="err_cannot_toggle">Impossibile accedere al flash LED!</string>
     <string name="notify_toggle_on">Torcia LED accesa</string>
     <string name="notify_toggle_on_ext">Tocca per spegnere.</string>
     <string name="menu_settings">Impostazioni</string>
-    <string name="pref_autotoggle_title">Avvio automatico</string>
-    <string name="pref_autotoggle_summary">Avvia la torcia al lancio</string>
+    <string name="pref_autotoggle_title">Abilita automaticamente</string>
+    <string name="pref_autotoggle_summary">Accendi la torcia all\'avvio</string>
     <string name="pref_dim_title">Riduci luminosità</string>
-    <string name="pref_dim_summary">Riduci la luminosità quando la torcia è accesa</string>
-    <string name="pref_userocker_title">Usa i tasti volume</string>
+    <string name="pref_dim_summary">Riduci la luminosità del display quando la torcia è attiva</string>
+    <string name="pref_userocker_title">Bilanciere del volume</string>
     <string name="pref_userocker_summary">Usa i tasti del volume per controllare la torcia</string>
+    <string name="pref_strobe_title">Intermittenza</string>
+    <string name="pref_strobe_summary">Attiva l\'intermittenza del flash</string>
     <string name="pref_british_switch_title">Inverti interruttore</string>
-    <string name="pref_british_switch_summary">Inverti il funzionamento del pulsante</string>
+    <string name="pref_british_switch_summary">Inverti il funzionamento dei pulsanti</string>
+
+    <string name="pref_donate_bitcoin">Dona con Bitcoin!</string>
+    <string name="button_copy_address">Copia indirizzo</string>
+    <string name="toast_address_copied">Indirizzo copiato negli appunti</string>
+    <string name="label_donate_address">Indirizzo di donazione</string>
 
 </resources>
